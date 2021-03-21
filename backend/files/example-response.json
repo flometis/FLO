@@ -1,0 +1,7 @@
+{
+"original": "
+Dal 7 al 15 gennaio 2021 è vietato, nell'ambito del territorio nazionale, ogni spostamento in entrata e in uscita tra i territori di diverse regioni o province autonome, salvi gli spostamenti motivati da comprovate esigenze lavorative o situazioni di necessità ovvero per motivi di salute.",
+"corrections": [
+{"start": 261, "end": 267, "recommendedText": "oppure", "explanation": "La parola ovvero è ambigua"}
+]
+}
