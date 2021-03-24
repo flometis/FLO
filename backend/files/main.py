@@ -92,13 +92,20 @@ def correct():
     os.system("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n")
     Corpus = BranCorpus.BranCorpus(corpuscols, legendaPos, ignoretext, dimList, tablewidget="cli")
     Corpus.loadPersonalCFG()
-    Corpus.CSVloader([origfile])
-    Corpus.sessionFile = origfile
     myrecovery = "n"
-    myfilter = "pos=A.*"
+    Corpus.CSVloader([origfile+"-bran.tsv"])
+    Corpus.sessionFile = origfile+"-bran.tsv"
+
+    #myfilter = "pos=A.*"
+    #mycol = 1
+    #output = Corpus.core_occorrenzeFiltrate(mycol, myfilter, myrecovery)
     mycol = 1
-    output = Corpus.core_occorrenzeFiltrate(mycol, myfilter, myrecovery)
-    myobj["occfilt"] = json.dumps(output).replace("\n", "")
+    try:
+    	output = Corpus.core_misure_lessicometriche(mycol, myrecovery)
+    except:
+        output = ""
+    mis_les = loadFromTSV(output)
+    myobj["misure_lessicometriche"] = json.dumps(mis_les) #.replace("\n", "")
     Corpus.chiudiProgetto()
 
     myjson = json.dumps(myobj)
@@ -112,6 +119,18 @@ def loadRegexFromTSV(fileName):
             row = line.split('\t')
             if len(row) == 3:
                 allregex.append(row)
+
+def loadFromTSV(fileName):
+    table = []
+    if not os.path.isfile(fileName):
+        return table
+    with open(fileName, "r", encoding='utf-8') as ins:
+        for line in ins:
+            row = line.split('\t')
+            if len(row) == 3:
+                table.append(row)
+    return table
+
 
 def findRegex(mytext, pattern, recommendedText, explanation):
     mycorrections = []
