@@ -7,6 +7,9 @@ import os.path
 import json
 import re
 import tempfile
+import time
+import subprocess
+import signal
 
 from flask import Flask
 from flask import request
@@ -89,12 +92,24 @@ def correct():
     file = open(origfile,"w", encoding='utf-8')
     file.write(mytext)
     file.close()
-    os.system("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n")
+    sessionfile = tmpdir+"/testo-bran.tsv"
+    a = subprocess.Popen("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n", stdout=subprocess.PIPE, shell=True)
+    starttime = time.time()
+    while os.path.isfile(sessionfile)==False:
+        time.sleep(0.5)
+    while a.poll():
+        if (time.time() - starttime) > 10:
+            time.sleep(1)
+            break
+        else:
+            time.sleep(0.5)
+    subprocess.Popen.kill(a)
+    #os.killpg(os.getpgid(a.pid), signal.SIGTERM)
     Corpus = BranCorpus.BranCorpus(corpuscols, legendaPos, ignoretext, dimList, tablewidget="cli")
     Corpus.loadPersonalCFG()
     myrecovery = "n"
-    Corpus.CSVloader([origfile+"-bran.tsv"])
-    Corpus.sessionFile = origfile+"-bran.tsv"
+    Corpus.CSVloader([sessionfile])
+    Corpus.sessionFile = sessionfile
 
     #myfilter = "pos=A.*"
     #mycol = 1
@@ -104,8 +119,9 @@ def correct():
     	output = Corpus.core_misure_lessicometriche(mycol, myrecovery)
     except:
         output = ""
+    output = sessionfile+"-misure_lessicometriche-token.tsv"
     mis_les = loadFromTSV(output)
-    myobj["misure_lessicometriche"] = json.dumps(mis_les) #.replace("\n", "")
+    myobj["misure_lessicometriche"] = mis_les 
     Corpus.chiudiProgetto()
 
     myjson = json.dumps(myobj)
@@ -127,7 +143,7 @@ def loadFromTSV(fileName):
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
             row = line.split('\t')
-            if len(row) == 3:
+            if len(row)>0:
                 table.append(row)
     return table
 

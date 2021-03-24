@@ -96,6 +96,12 @@ function fillCorrectionsList() {
       tmpcorrlist += "</details>";
       document.getElementById("correction_"+i.toString()).style.textDecoration = "underline double red";
     }
+    tmpcorrlist += "<h1>Misure Lessicometriche</h1>"
+    tmpcorrlist += "<p>"
+    for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
+      tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
+    }
+    tmpcorrlist += "</p>"
   } catch (error) {
     //nothing
   }
