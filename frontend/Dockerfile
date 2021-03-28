@@ -6,4 +6,3 @@ RUN mkdir -p /var/www/app
 RUN chown www-data:www-data /var/www/app
 COPY files/ /var/www/app
 
-
