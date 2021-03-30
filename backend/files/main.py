@@ -112,10 +112,15 @@ def correct():
     mis_les = loadFromTSV(output)
     myobj["misure_lessicometriche"] = mis_les 
 
-    mylevel = 1 
+    mylevel = 2 
     output = sessionfile+"-densitalessicale-" + str(mylevel) + ".tsv"
     execWithTimeout('/var/www/app/Bran/main.py densitalessicale "'+sessionfile+'" '+ str(mylevel) +' n', output, 2)
     dens = loadFromTSV(output)
+    mylevel = 1
+    output = sessionfile+"-densitalessicale-" + str(mylevel) + ".tsv"
+    execWithTimeout('/var/www/app/Bran/main.py densitalessicale "'+sessionfile+'" '+ str(mylevel) +' n', output, 2)
+    dens1 = loadFromTSV(output)
+    dens.extend(dens1[1:])
     myobj["densita_lessicale"] = dens
 
 
