@@ -16,4 +16,4 @@ RUN chmod 0644 /etc/cron.d/cleanup-task
 #RUN service cron enable
 #RUN service cron start
 
-CMD python3 /var/www/app/main.py
+CMD /var/www/app/main.py
