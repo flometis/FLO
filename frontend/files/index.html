@@ -102,9 +102,18 @@ function fillCorrectionsList() {
       tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
     }
     tmpcorrlist += "</p>"
+    tmpcorrlist += "<h1>Densità lessicale</h1>"
+    tmpcorrlist += "<p>"
+    for (var i = 1; i < lastCorrect["densita_lessicale"].length; i++) {
+      tmpcorrlist += "<b>"+lastCorrect["densita_lessicale"][i][0]+"</b>: "+lastCorrect["densita_lessicale"][i][1]+"</br>";
+    }
+    tmpcorrlist += "</p>"
+
   } catch (error) {
     //nothing
   }
+  
+
   mycorrlist.innerHTML = tmpcorrlist;
 }
 

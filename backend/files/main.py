@@ -93,27 +93,16 @@ def correct():
     file.write(mytext)
     file.close()
     sessionfile = tmpdir+"/testo-bran.tsv"
-    a = subprocess.Popen("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n", stdout=subprocess.PIPE, shell=True)
-    starttime = time.time()
-    while os.path.isfile(sessionfile)==False:
-        time.sleep(0.5)
-    while a.poll():
-        if (time.time() - starttime) > 10:
-            time.sleep(1)
-            break
-        else:
-            time.sleep(0.5)
-    subprocess.Popen.kill(a)
-    #os.killpg(os.getpgid(a.pid), signal.SIGTERM)
+    
+    execWithTimeout("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n", sessionfile, 10)
     Corpus = BranCorpus.BranCorpus(corpuscols, legendaPos, ignoretext, dimList, tablewidget="cli")
     Corpus.loadPersonalCFG()
-    myrecovery = "n"
+    myrecovery = False #"n"
     Corpus.CSVloader([sessionfile])
     Corpus.sessionFile = sessionfile
 
-    #myfilter = "pos=A.*"
-    #mycol = 1
-    #output = Corpus.core_occorrenzeFiltrate(mycol, myfilter, myrecovery)
+    # /var/www/app/Bran/main.py cerca /tmp/Bran/tmp52vjhuco/testo-bran.tsv 1 "pos[2]=A.*&&lemma[-1]=o.*" n
+    
     mycol = 1
     try:
     	output = Corpus.core_misure_lessicometriche(mycol, myrecovery)
@@ -122,10 +111,36 @@ def correct():
     output = sessionfile+"-misure_lessicometriche-token.tsv"
     mis_les = loadFromTSV(output)
     myobj["misure_lessicometriche"] = mis_les 
+
+    mylevel = 1 
+    output = sessionfile+"-densitalessicale-" + str(mylevel) + ".tsv"
+    execWithTimeout('/var/www/app/Bran/main.py densitalessicale "'+sessionfile+'" '+ str(mylevel) +' n', output, 2)
+    dens = loadFromTSV(output)
+    myobj["densita_lessicale"] = dens
+
+
     Corpus.chiudiProgetto()
 
     myjson = json.dumps(myobj)
     return myjson
+
+def execWithTimeout(mycmd, checkfile = "", mytimeout = 10):
+    a = subprocess.Popen(mycmd, stdout=subprocess.PIPE, shell=True)
+    starttime = time.time()
+    if checkfile != "":
+        while os.path.isfile(checkfile)==False:
+           time.sleep(0.5)
+    while a.poll():
+        if (time.time() - starttime) > mytimeout:
+            time.sleep(1)
+            break
+        else:
+            time.sleep(0.5)
+    try:
+        subprocess.Popen.kill(a)
+    except:
+        #os.killpg(os.getpgid(a.pid), signal.SIGTERM)
+        pass
 
 def loadRegexFromTSV(fileName):
     global allregex
