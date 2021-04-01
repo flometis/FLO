@@ -19,7 +19,7 @@ from forms import BranCorpus
 
 app = Flask(__name__)
 allregex = []
-
+allfilters = []
 
 corpuscols = {}
 ignoretext = ""
@@ -65,6 +65,8 @@ def index():
 
 @app.route('/correct', methods = ['GET', 'POST'])
 def correct():
+    global allfilters
+    global allregex
     global corpuscols
     global ignoretext
     global dimList
@@ -78,11 +80,6 @@ def correct():
 
     myobj = {"original": "","corrections": []}
     myobj["original"] = mytext
-    
-    for myregex in allregex:
-        mycorrections = findRegex(mytext, myregex[0], myregex[1], myregex[2])
-        for mycorr in mycorrections:
-            myobj["corrections"].append(mycorr)
 
     if not os.path.exists('/tmp/Bran'):
         os.makedirs('/tmp/Bran')
@@ -101,8 +98,6 @@ def correct():
     Corpus.CSVloader([sessionfile])
     Corpus.sessionFile = sessionfile
 
-    # /var/www/app/Bran/main.py cerca /tmp/Bran/tmp52vjhuco/testo-bran.tsv 1 "pos[2]=A.*&&lemma[-1]=o.*" n
-    
     mycol = 1
     try:
     	output = Corpus.core_misure_lessicometriche(mycol, myrecovery)
@@ -123,8 +118,22 @@ def correct():
     dens.extend(dens1[1:])
     myobj["densita_lessicale"] = dens
 
+    rebuiltText = mytext
+    myobj["original"] = rebuiltText
+
+    myobj["correctionsFilter"] = []
+    for myfilter in allfilters:
+        mycorrections = findBranFilter(sessionfile, mytext, myfilter[0], myfilter[1], myfilter[2])
+        for mycorr in mycorrections:
+            myobj["correctionsFilter"].append(mycorr)
+            #myobj["corrections"].append(mycorr)
 
     Corpus.chiudiProgetto()
+
+    for myregex in allregex:
+        mycorrections = findRegex(mytext, myregex[0], myregex[1], myregex[2])
+        for mycorr in mycorrections:
+            myobj["corrections"].append(mycorr)
 
     myjson = json.dumps(myobj)
     return myjson
@@ -156,6 +165,15 @@ def loadRegexFromTSV(fileName):
             if len(row) == 3:
                 allregex.append(row)
 
+def loadFiltersFromTSV(fileName):
+    global allfilters
+    allfilters = []
+    with open(fileName, "r", encoding='utf-8') as ins:
+        for line in ins:
+            row = line.split('\t')
+            if len(row) == 3:
+                allfilters.append(row)
+
 def loadFromTSV(fileName):
     table = []
     if not os.path.isfile(fileName):
@@ -166,6 +184,29 @@ def loadFromTSV(fileName):
             if len(row)>0:
                 table.append(row)
     return table
+
+def findBranFilter(sessionfile, mytext, filtertext, recommendedText, explanation):
+    # /var/www/app/Bran/main.py cerca /tmp/Bran/tmp52vjhuco/testo-bran.tsv 1 "pos[2]=A.*&&lemma[-1]=o.*" n
+    mycorrections = []
+    hkey = "token"
+    mycol = 1
+    cleanedfilter = re.sub("[^a-zA-Z0-9\[\]]", "", filtertext)
+    output = sessionfile + "-cerca-" + hkey + "-filtro-" + cleanedfilter + ".tsv"
+    print('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n')
+    print(output)
+    execWithTimeout('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n', output, 4)
+    res = loadFromTSV(output)
+    print(res)
+    for i in range(len(res)):
+        if i == 0:
+            continue
+        mycorr = {"start": 0, "end": 0, "recommendedText": "", "explanation": ""}
+        mycorr["start"] = int(res[i][1])
+        mycorr["end"] = int(res[i][2])
+        mycorr["recommendedText"] = recommendedText.replace("\n","").replace("\\n","")
+        mycorr["explanation"] = explanation
+        mycorrections.append(mycorr)
+    return mycorrections
 
 
 def findRegex(mytext, pattern, recommendedText, explanation):
@@ -181,5 +222,6 @@ def findRegex(mytext, pattern, recommendedText, explanation):
 
 if __name__ == '__main__':
     loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex.tsv")
+    loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters.tsv")
     loadBranData()
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
