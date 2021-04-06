@@ -118,22 +118,29 @@ def correct():
     dens.extend(dens1[1:])
     myobj["densita_lessicale"] = dens
 
-    rebuiltText = mytext
+    rebuiltText, tokenList = rebuildText(sessionfile)
     myobj["original"] = rebuiltText
 
-    myobj["correctionsFilter"] = []
+    #myobj["correctionsFilter"] = []
     for myfilter in allfilters:
-        mycorrections = findBranFilter(sessionfile, mytext, myfilter[0], myfilter[1], myfilter[2])
+        mycorrections = findBranFilter(sessionfile, rebuiltText, myfilter[0], myfilter[1], myfilter[2])
         for mycorr in mycorrections:
-            myobj["correctionsFilter"].append(mycorr)
-            #myobj["corrections"].append(mycorr)
+            #myobj["correctionsFilter"].append(mycorr)
+            mycorr["start"] = tokenList[mycorr["start"]][0]
+            mycorr["end"] = tokenList[mycorr["end"]][1]
+            myobj["corrections"].append(mycorr)
 
     Corpus.chiudiProgetto()
 
+    myobj["correctionsRe"] = []
     for myregex in allregex:
-        mycorrections = findRegex(mytext, myregex[0], myregex[1], myregex[2])
+        mycorrections = findRegex(rebuiltText, myregex[0], myregex[1], myregex[2])
         for mycorr in mycorrections:
-            myobj["corrections"].append(mycorr)
+            myobj["correctionsRe"].append(mycorr)
+
+
+    #sort and clean up corrections (avoid nested corrections)
+
 
     myjson = json.dumps(myobj)
     return myjson
@@ -184,6 +191,30 @@ def loadFromTSV(fileName):
             if len(row)>0:
                 table.append(row)
     return table
+
+def rebuildText(sessionfile):
+    fulltext = ""
+    tokenTable = [] #for every token, start and end char
+    mycorpus = loadFromTSV(sessionfile)
+    mycol = 1 #token
+    for row in mycorpus:
+        tstart = len(fulltext)
+        fulltext = fulltext + row[mycol] + " "
+        fulltext = remUselessSpaces(fulltext) 
+        if fulltext[tstart-1] != " ":
+            tstart = tstart - 1
+        if fulltext[-1] != " ":
+            fulltext = fulltext + " "
+        tend = tstart + len(row[mycol]) #len(fulltext)-1
+        tokenTable.append([tstart,tend])
+    return (fulltext, tokenTable)
+
+def remUselessSpaces(tempstring):
+    punt = " (["+re.escape(".,;!?)")+ "])"
+    tmpstring = re.sub(punt, "\g<1>", tempstring, flags=re.IGNORECASE)
+    punt = "(["+re.escape("'’(")+ "]) "
+    tmpstring = re.sub(punt, "\g<1>", tmpstring, flags=re.IGNORECASE|re.DOTALL)
+    return tmpstring
 
 def findBranFilter(sessionfile, mytext, filtertext, recommendedText, explanation):
     # /var/www/app/Bran/main.py cerca /tmp/Bran/tmp52vjhuco/testo-bran.tsv 1 "pos[2]=A.*&&lemma[-1]=o.*" n
