@@ -120,6 +120,8 @@ def correct():
 
     rebuiltText, tokenList = rebuildText(sessionfile)
     myobj["original"] = rebuiltText
+    
+    allcorrs = []
 
     #myobj["correctionsFilter"] = []
     for myfilter in allfilters:
@@ -128,19 +130,34 @@ def correct():
             #myobj["correctionsFilter"].append(mycorr)
             mycorr["start"] = tokenList[mycorr["start"]][0]
             mycorr["end"] = tokenList[mycorr["end"]][1]
-            myobj["corrections"].append(mycorr)
+            allcorrs.append(mycorr)
 
     Corpus.chiudiProgetto()
 
-    myobj["correctionsRe"] = []
+    #myobj["correctionsRe"] = []
     for myregex in allregex:
         mycorrections = findRegex(rebuiltText, myregex[0], myregex[1], myregex[2])
         for mycorr in mycorrections:
-            myobj["correctionsRe"].append(mycorr)
+            #myobj["correctionsRe"].append(mycorr)
+            allcorrs.append(mycorr)
 
 
     #sort and clean up corrections (avoid nested corrections)
+    tmpcorrs = []
+    while len(allcorrs)>0:
+        smaller = [0,len(rebuiltText)]
+        for i in range(len(allcorrs)):
+            if allcorrs[i]["start"] < smaller[1]:
+                smaller[0] = i
+                smaller[1] = allcorrs[i]["start"]
+        tmpcorrs.append(allcorrs.pop(smaller[0]))
 
+    myobj["correctionsNested"] = []
+    for i in range(len(tmpcorrs)-1):
+        if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
+            myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
+
+    myobj["corrections"] = tmpcorrs
 
     myjson = json.dumps(myobj)
     return myjson

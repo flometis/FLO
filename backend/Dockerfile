@@ -9,6 +9,9 @@ RUN apt install -y python3-pyside2*
 RUN mkdir -p /var/www/app
 RUN chown -R www-data:www-data /var/www/app
 
+RUN apt install -y --no-install-recommends --no-install-suggests cron
+RUN apt autoremove
+
 COPY cleanup.sh /usr/local/bin/cleanup.sh
 RUN chmod +x /usr/local/bin/cleanup.sh
 COPY crontab /etc/cron.d/cleanup-task

@@ -14,6 +14,7 @@ chmod +x /var/lib/docker/volumes/flo_backend/_data/main.py
 docker exec flo_backend_1 python3 /var/www/app/Bran/main.py help
 docker cp $appdir/backend/brancfg flo_backend_1:/root/.brancfg
 docker restart flo_backend_1
+docker exec flo_backend_1 service cron start
 
 # Frontend
 cp -r /root/flo/frontend/files/* /var/lib/docker/volumes/flo_frontend/_data/
