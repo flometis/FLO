@@ -56,6 +56,10 @@ function controlloTesto(mytextarea) {
   var apipage = window.location.origin +"/floapi";
   var data = new FormData();
   data.append('text', mytext);
+  var myRS = "1";
+  var tmpRS = document.getElementById("ruleset").value;
+  if ( tmpRS == "2") myRS = "2";
+  data.append('ruleset', myRS);
   xmlhttp.open("POST", apipage, true);
   xmlhttp.send(data);
   xmlhttp.onreadystatechange = function() {
@@ -140,6 +144,8 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
 </br>
  b) essere titolari di un rapporto di lavoro dipendente la cui retribuzione lorda sia superiore agli importi di cui al comma 5;     
     </div>
+    </br>
+    Regole: <select id="ruleset"> <option value="1">Di base</option> <option value="2">Avanzate</option> </select>
     </br>
     <button id="submitButton" onclick="checkTextEditor();">Controlla</button>
 </td>

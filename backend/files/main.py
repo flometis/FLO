@@ -20,6 +20,10 @@ from forms import BranCorpus
 app = Flask(__name__)
 allregex = []
 allfilters = []
+allregex1 = []
+allfilters1 = []
+allregex2 = []
+allfilters2 = []
 
 corpuscols = {}
 ignoretext = ""
@@ -67,6 +71,10 @@ def index():
 def correct():
     global allfilters
     global allregex
+    global allfilters1
+    global allregex1
+    global allfilters2
+    global allregex3
     global corpuscols
     global ignoretext
     global dimList
@@ -77,6 +85,15 @@ def correct():
 
     mytext = request.form['text']
     mytext = re.sub('<(?!\s*\/*\s*br\s*\/*\s*/?>)[^<>]*>','', mytext)
+
+    myRS = request.form['ruleset']
+
+    if myRS == "2":
+        allregex = allregex2
+        allfilters = allfilters2
+    else:
+        allregex = allregex1
+        allfilters = allfilters1
 
     myobj = {"original": "","corrections": []}
     myobj["original"] = mytext
@@ -181,22 +198,22 @@ def execWithTimeout(mycmd, checkfile = "", mytimeout = 10):
         pass
 
 def loadRegexFromTSV(fileName):
-    global allregex
-    allregex = []
+    tallregex = []
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
             row = line.split('\t')
             if len(row) == 3:
-                allregex.append(row)
+                tallregex.append(row)
+    return tallregex
 
 def loadFiltersFromTSV(fileName):
-    global allfilters
-    allfilters = []
+    tallfilters = []
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
             row = line.split('\t')
             if len(row) == 3:
-                allfilters.append(row)
+                tallfilters.append(row)
+    return tallfilters
 
 def loadFromTSV(fileName):
     table = []
@@ -269,7 +286,10 @@ def findRegex(mytext, pattern, recommendedText, explanation):
     return mycorrections
 
 if __name__ == '__main__':
-    loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex.tsv")
-    loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters.tsv")
+    allregex1 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex1.tsv")
+    allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters1.tsv")
+    allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex2.tsv")
+    allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters2.tsv")
+
     loadBranData()
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
