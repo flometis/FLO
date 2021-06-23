@@ -181,6 +181,12 @@ def correct():
         if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
             myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
 
+    #merge close corrections
+    for i in range(len(tmpcorrs)-1, 0, -1):
+        if tmpcorrs[i]["start"] == (tmpcorrs[i-1]["end"]+1) and tmpcorrs[i-1]["explanation"] == tmpcorrs[i]["explanation"] and tmpcorrs[i-1]["recommendedText"] == tmpcorrs[i]["recommendedText"]:
+            tmpcorrs[i-1]["end"] = tmpcorrs[i]["end"]
+            tmpcorrs.pop(i)
+
     myobj["corrections"] = tmpcorrs
 
     myjson = json.dumps(myobj)

@@ -1,1 +1,2 @@
 pos=PRON&&feat=.*Clitic.*&&pos[1]=VERB		Non utilizzare i verbi in forma impersonale
+IDword>9&&IDword<16	Dividi la frase con . oppure ;	Questa frase è un po' troppo lunga
