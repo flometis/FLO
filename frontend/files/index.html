@@ -99,23 +99,33 @@ function fillCorrectionsList() {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
       tmpcorrlist += "<details id=\"details_"+i.toString()+"\">";
       tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+i.toString()+"</p></summary>";
-      tmpcorrlist += "<p><span id=\"explaination_"+i.toString()+"\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\">"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
+      tmpcorrlist += "<p><span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\">"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
       tmpcorrlist += "</details>";
       document.getElementById("correction_"+i.toString()).style.textDecoration = "underline double red";
     }
-    tmpcorrlist += "<h1>Misure Lessicometriche</h1>"
-    tmpcorrlist += "<p>"
+
+    tmpcorrlist += "<h1>GulpEASE</h1>";
+    tmpcorrlist += "<p>";
+    for (var i = 1; i < lastCorrect["gulpease"].length; i++) {
+      tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][1]+"</b>: "+lastCorrect["gulpease"][i][1]+"</br>";
+      tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][2]+"</b>: "+lastCorrect["gulpease"][i][2]+"</br>";
+      tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][3]+"</b>: "+lastCorrect["gulpease"][i][3]+"</br>";
+      tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][4]+"</b>: "+lastCorrect["gulpease"][i][4]+"</br>";
+    } 
+
+    tmpcorrlist += "<h1>Misure Lessicometriche</h1>";
+    tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
     }
-    tmpcorrlist += "</p>"
-    tmpcorrlist += "<h1>Densità lessicale</h1>"
-    tmpcorrlist += "<p>"
+    tmpcorrlist += "</p>";
+    tmpcorrlist += "<h1>Densità lessicale</h1>";
+    tmpcorrlist += "<p>";
     for (var i = 2; i < lastCorrect["densita_lessicale"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["densita_lessicale"][i][0]+"</b>: "+lastCorrect["densita_lessicale"][i][2]+"%</br>";
       if (i == 4) tmpcorrlist += "</br>";
     }
-    tmpcorrlist += "</p>"
+    tmpcorrlist += "</p>";
 
   } catch (error) {
     //nothing

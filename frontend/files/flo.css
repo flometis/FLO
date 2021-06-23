@@ -30,6 +30,10 @@ p {
   vertical-align: top;
 }
 
+.explainations {
+  cursor: pointer;
+}
+
 [data-tooltip] {
     display: inline-block;
     position: relative; 

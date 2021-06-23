@@ -135,6 +135,13 @@ def correct():
     dens.extend(dens1[1:])
     myobj["densita_lessicale"] = dens
 
+    doignpunct = "Y"
+    myfilterGulp = "''"
+    output = sessionfile+"-gulpease-.tsv"
+    execWithTimeout('/var/www/app/Bran/main.py gulpease "'+sessionfile+'" ' + str(doignpunct) + ' ' + str(myfilterGulp) +' n', output, 2)
+    gulp = loadFromTSV(output)
+    myobj["gulpease"] = gulp
+
     rebuiltText, tokenList = rebuildText(sessionfile)
     myobj["original"] = rebuiltText
     
