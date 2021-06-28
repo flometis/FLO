@@ -88,12 +88,14 @@ def correct():
 
     myRS = request.form['ruleset']
 
-    if myRS == "2":
+    if myRS == "etr":
         allregex = allregex2
         allfilters = allfilters2
+        print("using ruleset 2")
     else:
         allregex = allregex1
         allfilters = allfilters1
+        print("using ruleset 1")
 
     myobj = {"original": "","corrections": []}
     myobj["original"] = mytext
@@ -299,10 +301,10 @@ def findRegex(mytext, pattern, recommendedText, explanation):
     return mycorrections
 
 if __name__ == '__main__':
-    allregex1 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex1.tsv")
-    allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters1.tsv")
-    allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex2.tsv")
-    allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters2.tsv")
+    allregex1 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_plain.tsv")
+    allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_plain.tsv")
+    allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_etr.tsv")
+    allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_etr.tsv")
 
     loadBranData()
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
