@@ -56,9 +56,9 @@ function controlloTesto(mytextarea) {
   var apipage = window.location.origin +"/floapi";
   var data = new FormData();
   data.append('text', mytext);
-  var myRS = "1";
+  var myRS = "plain";
   var tmpRS = document.getElementById("ruleset").value;
-  if ( tmpRS == "2") myRS = "2";
+  if ( tmpRS == "etr") myRS = "etr";
   data.append('ruleset', myRS);
   xmlhttp.open("POST", apipage, true);
   xmlhttp.send(data);
