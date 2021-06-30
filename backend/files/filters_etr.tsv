@@ -1,1 +1,9 @@
-pos=PRON&&feat=.*Clitic.*&&pos[1]=VERB		Non utilizzare i verbi in forma impersonale
+IDword>15	Dividi la frase. 	Questa frase è troppo lunga. Una frase ideale in linguaggio facile non dovrebbe superare le 10-15 parole. 
+lemma=qualora&&feat[F]=.*Mood=Sub.*	se	Quando poni una condizione, utilizza se
+lemma[0]=a&&lemma[1]=condizione&&lemma[2]=che&&feat[F]=.*Mood=Sub.*	se	Quando poni una condizione, utilizza se
+lemma[0]=in&&lemma[1]=caso&&lemma[2]=in&&lemma[3]=cui&&feat[F]=.*Mood=Sub.*	se	Quando poni una condizione, utilizza se
+lemma=nonostante&&feat[F]=.*Mood=Sub.*	anche se	Nonostante è una parola difficile
+feat=SCONJ&&feat[F]=SCONJ		La frase è troppo complessa: ti consigliamo di accorciarla.
+dep=aux:pass		Le frasi passive sono poco leggibili: preferisci le frasi di forma attiva. 
+dep=expl:impers		Non utilizzare forme impersonali
+feat=VerbForm=Ger&&lemma[-1]=(?!stare)		Non utilizzare il gerundio, usa l'indicativo

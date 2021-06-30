@@ -1,1 +1,4 @@
-ovvero	oppure	La parola ovvero è ambigua
+ovvero	cioè/oppure	La parola ovvero è ambigua: sostituiscila con cioè o oppure a seconda di quello che volevi dire.
+[Pp]iuttosto che	invece di	
+\.(.*,){4}.*\.		Nella tua frase ci sono troppe virgole: vuoi provare a fare una lista?
+[\.\?\!] *[^\n]		Nel linguaggio facile si va a capo con ogni nuova frase.

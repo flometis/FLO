@@ -180,8 +180,11 @@ def correct():
 
     myobj["correctionsNested"] = []
     for i in range(len(tmpcorrs)-1):
-        if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
-            myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
+        try:
+            if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
+                myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
+        except:
+            pass
 
     #merge close corrections
     for i in range(len(tmpcorrs)-1, 0, -1):
