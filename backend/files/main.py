@@ -168,7 +168,7 @@ def correct():
             allcorrs.append(mycorr)
 
 
-    #sort and clean up corrections (avoid nested corrections)
+    #sort corrections (avoid nested corrections)
     tmpcorrs = []
     while len(allcorrs)>0:
         smaller = [0,len(rebuiltText)]
@@ -178,17 +178,29 @@ def correct():
                 smaller[1] = allcorrs[i]["start"]
         tmpcorrs.append(allcorrs.pop(smaller[0]))
 
-    myobj["correctionsNested"] = []
-    for i in range(len(tmpcorrs)-1):
-        try:
-            if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
-                myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
-        except:
-            pass
-
     #merge close corrections
     for i in range(len(tmpcorrs)-1, 0, -1):
-        if tmpcorrs[i]["start"] == (tmpcorrs[i-1]["end"]+1) and tmpcorrs[i-1]["explanation"] == tmpcorrs[i]["explanation"] and tmpcorrs[i-1]["recommendedText"] == tmpcorrs[i]["recommendedText"]:
+        if bool(tmpcorrs[i]["start"] == (tmpcorrs[i-1]["end"]+1) or tmpcorrs[i]["start"] == tmpcorrs[i-1]["end"]) and tmpcorrs[i-1]["explanation"] == tmpcorrs[i]["explanation"] and tmpcorrs[i-1]["recommendedText"] == tmpcorrs[i]["recommendedText"]:
+            tmpcorrs[i-1]["end"] = tmpcorrs[i]["end"]
+            tmpcorrs.pop(i)
+
+    #clean up nested corrections
+    myobj["correctionsNested"] = []
+    nestedCorrectionsPresent = True
+    while nestedCorrectionsPresent:
+        nestedCorrectionsPresent = False
+        for i in range(len(tmpcorrs)-1):
+            try:
+                if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
+                    myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
+                    nestedCorrectionsPresent = True
+            except:
+                print("Error in correctionsNested")
+                pass
+
+    #merge again close corrections
+    for i in range(len(tmpcorrs)-1, 0, -1):
+        if bool(tmpcorrs[i]["start"] == (tmpcorrs[i-1]["end"]+1) or tmpcorrs[i]["start"] == tmpcorrs[i-1]["end"]) and tmpcorrs[i-1]["explanation"] == tmpcorrs[i]["explanation"] and tmpcorrs[i-1]["recommendedText"] == tmpcorrs[i]["recommendedText"]:
             tmpcorrs[i-1]["end"] = tmpcorrs[i]["end"]
             tmpcorrs.pop(i)
 
