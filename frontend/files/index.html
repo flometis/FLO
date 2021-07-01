@@ -99,7 +99,17 @@ function fillCorrectionsList() {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
       tmpcorrlist += "<details id=\"details_"+i.toString()+"\">";
       tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+i.toString()+"</p></summary>";
-      tmpcorrlist += "<p><span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\">"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
+      var tmpthiscorr = "";
+      tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
+      tmpthiscorr += lastCorrect["corrections"][i]["explanation"];
+      for (var n = 0; n < lastCorrect["correctionsNested"].length; n++) {
+        if (lastCorrect["correctionsNested"][n]["start"]>lastCorrect["corrections"][i]["start"] && lastCorrect["correctionsNested"][n]["start"]<lastCorrect["corrections"][i]["end"]) {
+          if (! tmpthiscorr.includes(lastCorrect["correctionsNested"][n]["explanation"])) {
+            tmpcorrlist += "<span id=\"nested_"+n.toString()+"\" class=\"nested\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["correctionsNested"][n]["explanation"]+"</p></span>";
+            tmpthiscorr += lastCorrect["correctionsNested"][n]["explanation"];
+          }
+        }
+      }
       tmpcorrlist += "</details>";
       document.getElementById("correction_"+i.toString()).style.textDecoration = "underline double red";
     }

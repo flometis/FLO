@@ -33,6 +33,9 @@ p {
 .explainations {
   cursor: pointer;
 }
+.nested {
+ cursor: pointer;
+}
 
 [data-tooltip] {
     display: inline-block;
