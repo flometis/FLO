@@ -84,7 +84,11 @@ def correct():
         return myjson
 
     mytext = request.form['text']
-    mytext = re.sub('<(?!\s*\/*\s*br\s*\/*\s*/?>)[^<>]*>','', mytext)
+    mytext = re.sub('<[^a-z]*?br>', '\n', mytext)
+    mytext = re.sub('<.*?>', '', mytext, flags = re.DOTALL)
+    mytext = re.sub('\n', '<br>', mytext) 
+    #print(mytext)
+    mytext = mytext + '\n' #Fix temporaneo: Bran si aspetta una riga vuota alla fine del file
 
     myRS = request.form['ruleset']
 
@@ -195,7 +199,7 @@ def correct():
                     myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
                     nestedCorrectionsPresent = True
             except:
-                print("Error in correctionsNested")
+                #print("Error in correctionsNested")
                 pass
 
     #merge again close corrections
@@ -210,7 +214,8 @@ def correct():
     return myjson
 
 def execWithTimeout(mycmd, checkfile = "", mytimeout = 10):
-    a = subprocess.Popen(mycmd, stdout=subprocess.PIPE, shell=True)
+    redirect = " &> /dev/null"
+    a = subprocess.Popen(mycmd + redirect, stdout=subprocess.PIPE, shell=True)
     starttime = time.time()
     if checkfile != "":
         while os.path.isfile(checkfile)==False:
@@ -287,11 +292,11 @@ def findBranFilter(sessionfile, mytext, filtertext, recommendedText, explanation
     mycol = 1
     cleanedfilter = re.sub("[^a-zA-Z0-9\[\]]", "", filtertext)
     output = sessionfile + "-cerca-" + hkey + "-filtro-" + cleanedfilter + ".tsv"
-    print('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n')
-    print(output)
+    #print('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n')
+    #print(output)
     execWithTimeout('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n', output, 4)
     res = loadFromTSV(output)
-    print(res)
+    #print(res)
     for i in range(len(res)):
         if i == 0:
             continue

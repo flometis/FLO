@@ -53,6 +53,8 @@ function controlloTesto(mytextarea) {
   }
 
   var mytext = document.getElementById(mytextarea).innerHTML; //.innerText.replace(/<[^>]+>/g, '');
+  mytext = mytext.replace(/\r\n|\r|\n/g, '<br>');
+  //console.log(mytext);
   var apipage = window.location.origin +"/floapi";
   var data = new FormData();
   data.append('text', mytext);
@@ -64,15 +66,19 @@ function controlloTesto(mytextarea) {
   xmlhttp.send(data);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-	var correct = JSON.parse(xmlhttp.responseText);
-	//console.log(correct);
+        try {
+	  var correct = JSON.parse(xmlhttp.responseText);
+        } catch (error) {
+	  console.log(error);
+          document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, impossibile calcolare le correzioni</h1></center>';
+        }
 	lastCorrect = correct;
         corrections = correct["original"];
         for (var i = correct["corrections"].length -1; i > -1; i--) {
           recommend = correct["corrections"][i]["recommendedText"];
 	  explain = lastCorrect["corrections"][i]["explanation"];
 	  if (recommend == "") recommend = explain;
-    	  corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan\" data-tooltip=\""+recommend+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"])+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
+    	  corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"])+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
     	}
 	mytexteditor = document.getElementById(mytextarea);
 	mytexteditor.innerHTML = corrections;
