@@ -25,6 +25,8 @@ allfilters1 = []
 allregex2 = []
 allfilters2 = []
 
+vdb2016 = []
+
 corpuscols = {}
 ignoretext = ""
 dimList = []
@@ -79,6 +81,7 @@ def correct():
     global ignoretext
     global dimList
     global legendaPos
+    global vdb2016
     if request.method == 'GET':
         myjson = index()
         return myjson
@@ -171,6 +174,15 @@ def correct():
             #myobj["correctionsRe"].append(mycorr)
             allcorrs.append(mycorr)
 
+    corpustsv = loadFromTSV(sessionfile)
+    for i in range(len(corpustsv)):
+        if not corpustsv[i][2] in vdb2016:
+            mycorr = {}
+            mycorr["start"] = tokenList[i][0]
+            mycorr["end"] = tokenList[i][1]
+            mycorr["recommendedText"] = "Scegli una parola più semplice"
+            mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
+            allcorrs.append(mycorr)
 
     #sort corrections (avoid nested corrections)
     tmpcorrs = []
@@ -325,6 +337,11 @@ if __name__ == '__main__':
     allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_plain.tsv")
     allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_etr.tsv")
     allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_etr.tsv")
+    
+    vdb2016 = loadFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/Bran/dizionario/vdb2016.txt")[0]
+    for i in range(len(vdb2016)):
+        vdb2016[i] = vdb2016[i].replace("\n", "")
+    #print(vdb2016)
 
     loadBranData()
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
