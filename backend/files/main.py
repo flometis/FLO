@@ -10,6 +10,8 @@ import tempfile
 import time
 import subprocess
 import signal
+import requests
+#python3 -m pip install requests
 
 from flask import Flask
 from flask import request
@@ -32,6 +34,8 @@ corpuscols = {}
 ignoretext = ""
 dimList = []
 legendaPos = {}
+
+useragent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
 
 def loadBranData():
     global corpuscols
@@ -83,6 +87,8 @@ def correct():
     global dimList
     global legendaPos
     global vdb2016
+    global useragent
+    
     if request.method == 'GET':
         myjson = index()
         return myjson
@@ -181,8 +187,25 @@ def correct():
             mycorr = {}
             mycorr["start"] = tokenList[i][0]
             mycorr["end"] = tokenList[i][1]
-            mycorr["recommendedText"] = "Scegli una parola più semplice"
+            #https://it.wiktionary.org/w/api.php?action=parse&page=retribuzione&format=json&prop=wikitext&formatversion=2
+            synonims = []
+            S = requests.Session()
+            URL = "https://it.wiktionary.org/w/api.php"
+            PARAMS = {
+                "action": "parse",
+                "page": str(corpustsv[i][1]),
+                "format": "json",
+                "prop":"wikitext",
+                "formatversion":"2"
+            }
+            R = S.get(url=URL, params=PARAMS)
+            DATA = R.json()
+            synstr = re.sub(".*"+re.escape("{{-sin-}}")+"(.*?)"+re.escape("{{-")+".*","\g<1>",DATA["parse"]["wikitext"].replace("\n",""),flags=re.DOTALL)
+            synstrclean = re.sub(re.escape("{")+".*?"+re.escape("}"),"",synstr.lower())
+            synonims = re.split("]+",re.sub("[^a-z\]]","",synstrclean).replace(" ", ""))
+            mycorr["recommendedText"] = "Prova a utilizzare "+str(synonims)
             mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
+            mycorr["synonims"] = synonims
             allcorrs.append(mycorr)
 
     #sort corrections (avoid nested corrections)

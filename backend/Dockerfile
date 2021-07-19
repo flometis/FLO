@@ -5,6 +5,7 @@ RUN apt-get install -y git
 RUN apt-get install -y python3-pip
 RUN pip3 install Flask
 RUN /usr/bin/python3 -m pip install flask
+RUN /usr/bin/python3 -m pip install requests
 RUN apt install -y python3-pyside2*
 RUN mkdir -p /var/www/app
 RUN chown -R www-data:www-data /var/www/app
