@@ -26,6 +26,7 @@ allregex2 = []
 allfilters2 = []
 
 vdb2016 = []
+vdbAdd = []
 
 corpuscols = {}
 ignoretext = ""
@@ -176,7 +177,7 @@ def correct():
 
     corpustsv = loadFromTSV(sessionfile)
     for i in range(len(corpustsv)):
-        if not corpustsv[i][2] in vdb2016:
+        if corpustsv[i][2] not in vdb2016 and corpustsv[i][2] not in vdbAdd and bool(re.match('.*[^a-z].*', corpustsv[i][2]))==False:
             mycorr = {}
             mycorr["start"] = tokenList[i][0]
             mycorr["end"] = tokenList[i][1]
@@ -338,10 +339,11 @@ if __name__ == '__main__':
     allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_etr.tsv")
     allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_etr.tsv")
     
-    vdb2016 = loadFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/Bran/dizionario/vdb2016.txt")[0]
-    for i in range(len(vdb2016)):
-        vdb2016[i] = vdb2016[i].replace("\n", "")
-    #print(vdb2016)
-
+    vdb2016 = []
+    with open(os.path.abspath(os.path.dirname(sys.argv[0]))+"/Bran/dizionario/vdb2016.txt", "r", encoding='utf-8') as ins:
+        for line in ins:
+            vdb2016.append(line.replace("\n", ""))
+    vdbAdd = ["dal","il"]
+    
     loadBranData()
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
