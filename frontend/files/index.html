@@ -16,6 +16,8 @@
 
 var lastCorrect = new Array();
 
+var vdb2016 = new Array();
+
 function unhighlight(x, i) {
   x.style.backgroundColor="transparent";
   var summary = document.getElementById('details_'+i.toString());
@@ -26,6 +28,18 @@ function highlight(x, i) {
   x.style.backgroundColor="red";
   var summary = document.getElementById('details_'+i.toString());
   summary.open = true;
+}
+
+function recommendSynonims(allSynonims) {
+  var synonims = "";
+  for (var l = 0; l< vdb2016.length; l++) {
+    var lemma = vdb2016[l];
+    if (allSynonims.includes(lemma) && lemma != "") {
+      if (synonims != "") synonims = synonims + ", ";
+      synonims = synonims + lemma;
+    }
+  }
+  return synonims;
 }
 
 function controlloTesto(mytextarea) {
@@ -76,6 +90,11 @@ function controlloTesto(mytextarea) {
         corrections = correct["original"];
         for (var i = correct["corrections"].length -1; i > -1; i--) {
           recommend = correct["corrections"][i]["recommendedText"];
+	  if ("synonims" in correct["corrections"][i]) {
+            var synonims = recommendSynonims(correct["corrections"][i]["synonims"]);
+            if (synonims == "") synonims = "una parola più semplice";
+            recommend = recommend + synonims;
+	  }
 	  explain = lastCorrect["corrections"][i]["explanation"];
 	  if (recommend == "") recommend = explain;
     	  corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"])+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
@@ -88,6 +107,7 @@ function controlloTesto(mytextarea) {
 
   
 }
+
 
 function checkTextEditor() {
  mytexteditor = document.getElementById("textEditor");
@@ -111,7 +131,16 @@ function fillCorrectionsList() {
       for (var n = 0; n < lastCorrect["correctionsNested"].length; n++) {
         if (lastCorrect["correctionsNested"][n]["start"]>lastCorrect["corrections"][i]["start"] && lastCorrect["correctionsNested"][n]["start"]<lastCorrect["corrections"][i]["end"]) {
           if (! tmpthiscorr.includes(lastCorrect["correctionsNested"][n]["explanation"])) {
-            tmpcorrlist += "<span id=\"nested_"+n.toString()+"\" class=\"nested\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["correctionsNested"][n]["explanation"]+"</p></span>";
+            var synSuggestion = "";
+            if ("synonims" in lastCorrect["correctionsNested"][n]) {
+              var synonims = recommendSynonims(lastCorrect["correctionsNested"][n]["synonims"]);
+              if (synonims == "") {
+                synSuggestion =  "</br>Nessun sinonimo trovato nel Vocabolario di Base.";
+              } else {
+                synSuggestion = "</br>Sinonimi presenti nel Vocabolario di Base: "+ synonims;
+              }
+            }
+            tmpcorrlist += "<span id=\"nested_"+n.toString()+"\" class=\"nested\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["correctionsNested"][n]["explanation"]+synSuggestion+"</p></span>";
             tmpthiscorr += lastCorrect["correctionsNested"][n]["explanation"];
           }
         }
@@ -152,6 +181,15 @@ function fillCorrectionsList() {
 }
 
 window.onload = function () {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       vdb2016 = xhttp.responseText.replace(/\r/g,"").split("\n");
+    }
+  };
+  xhttp.open("GET", "vdb2016.txt", true);
+  xhttp.send();
+
   fillCorrectionsList();
 }
 </script>
