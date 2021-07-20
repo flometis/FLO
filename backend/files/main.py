@@ -183,7 +183,10 @@ def correct():
 
     corpustsv = loadFromTSV(sessionfile)
     for i in range(len(corpustsv)):
-        if corpustsv[i][2] not in vdb2016 and corpustsv[i][2] not in vdbAdd and bool(re.match('.*[^a-z].*', corpustsv[i][2]))==False:
+        lemma =corpustsv[i][2]
+        #fix udpipe errors
+        lemma = re.sub("iscere$","ire", lemma)
+        if lemma not in vdb2016 and lemma not in vdbAdd and bool(re.match('.*[^a-z].*', lemma))==False:
             mycorr = {}
             mycorr["start"] = tokenList[i][0]
             mycorr["end"] = tokenList[i][1]
@@ -193,17 +196,23 @@ def correct():
             URL = "https://it.wiktionary.org/w/api.php"
             PARAMS = {
                 "action": "parse",
-                "page": str(corpustsv[i][1]),
+                "page": str(lemma),
                 "format": "json",
                 "prop":"wikitext",
                 "formatversion":"2"
             }
             R = S.get(url=URL, params=PARAMS)
             DATA = R.json()
-            synstr = re.sub(".*"+re.escape("{{-sin-}}")+"(.*?)"+re.escape("{{-")+".*","\g<1>",DATA["parse"]["wikitext"].replace("\n",""),flags=re.DOTALL)
-            synstrclean = re.sub(re.escape("{")+".*?"+re.escape("}"),"",synstr.lower())
-            synonims = re.split("]+",re.sub("[^a-z\]]","",synstrclean).replace(" ", ""))
-            mycorr["recommendedText"] = "Prova a utilizzare "+str(synonims)
+            try:
+                wikitxt = DATA["parse"]["wikitext"].replace("\n","")
+                synStart = wikitxt.index("{{-sin-}}")
+                synEnd = wikitxt.index("{{-", synStart+8)
+                synstr = wikitxt[synStart:synEnd]
+                synstrclean = re.sub(re.escape("{")+".*?"+re.escape("}"),"",synstr.lower())
+                synonims = re.split("]+",re.sub("[^a-z\]]","",synstrclean).replace(" ", ""))
+            except:
+                synonims = []
+            mycorr["recommendedText"] = "Prova a utilizzare "
             mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
             mycorr["synonims"] = synonims
             allcorrs.append(mycorr)
