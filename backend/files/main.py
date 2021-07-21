@@ -170,6 +170,12 @@ def correct():
             #myobj["correctionsFilter"].append(mycorr)
             mycorr["start"] = tokenList[mycorr["start"]][0]
             mycorr["end"] = tokenList[mycorr["end"]][1]
+            try:
+                mycorr["category"] = myfilter[3]
+                if myfilter[3] == "":
+                    mycorr["category"] = "generic"
+            except:
+                mycorr["category"] = "generic"
             allcorrs.append(mycorr)
 
     Corpus.chiudiProgetto()
@@ -179,6 +185,12 @@ def correct():
         mycorrections = findRegex(rebuiltText, myregex[0], myregex[1], myregex[2])
         for mycorr in mycorrections:
             #myobj["correctionsRe"].append(mycorr)
+            try:
+                mycorr["category"] = myregex[3]
+                if myfilter[3] == "":
+                    mycorr["category"] = "generic"
+            except:
+                mycorr["category"] = "generic"
             allcorrs.append(mycorr)
 
     corpustsv = loadFromTSV(sessionfile)
@@ -215,6 +227,7 @@ def correct():
             mycorr["recommendedText"] = "Prova a utilizzare "
             mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
             mycorr["synonims"] = synonims
+            mycorr["category"] = "synonims"
             allcorrs.append(mycorr)
 
     #sort corrections (avoid nested corrections)
@@ -240,6 +253,8 @@ def correct():
         nestedCorrectionsPresent = False
         for i in range(len(tmpcorrs)-1):
             try:
+                if tmpcorrs[i]["category"] == "lunghezza":
+                    tmpcorrs[i]["end"] = tmpcorrs[i]["start"]
                 if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
                     myobj["correctionsNested"].append(tmpcorrs.pop(i+1))
                     nestedCorrectionsPresent = True
@@ -281,8 +296,8 @@ def loadRegexFromTSV(fileName):
     tallregex = []
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
-            row = line.split('\t')
-            if len(row) == 3:
+            row = line.replace("\n","").split('\t')
+            if len(row) == 4:
                 tallregex.append(row)
     return tallregex
 
@@ -290,14 +305,15 @@ def loadFiltersFromTSV(fileName):
     tallfilters = []
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
-            row = line.split('\t')
-            if len(row) == 3:
+            row = line.replace("\n","").split('\t')
+            if len(row) == 4:
                 tallfilters.append(row)
     return tallfilters
 
 def loadFromTSV(fileName):
     table = []
     if not os.path.isfile(fileName):
+        print("File not found: "+fileName)
         return table
     with open(fileName, "r", encoding='utf-8') as ins:
         for line in ins:
@@ -370,7 +386,7 @@ if __name__ == '__main__':
     allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_plain.tsv")
     allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_etr.tsv")
     allfilters2 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_etr.tsv")
-    
+ 
     vdb2016 = []
     with open(os.path.abspath(os.path.dirname(sys.argv[0]))+"/Bran/dizionario/vdb2016.txt", "r", encoding='utf-8') as ins:
         for line in ins:
