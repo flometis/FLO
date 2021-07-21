@@ -1,4 +1,4 @@
-ovvero	cioè/oppure	La parola ovvero è ambigua: sostituiscila con cioè o oppure a seconda di quello che volevi dire.
-[Pp]iuttosto che	invece di	Piuttosto che ormai può voler dire “invece di” o, nella lingua parlata, “oppure”. Meglio sostituirlo con un’espressione meno ambigua.
-([^\.:;\!\?\n]*?,){4}.*?[\.:;\!\?\n]		Nella tua frase ci sono troppe virgole: vuoi provare a fare una lista?
-[\.\?\!] *[^\n]		Nel linguaggio facile si va a capo con ogni nuova frase.
+ovvero	cioè/oppure	La parola ovvero è ambigua: sostituiscila con cioè o oppure a seconda di quello che volevi dire.	lessico
+[Pp]iuttosto che	invece di	Piuttosto che ormai può voler dire “invece di” o, nella lingua parlata, “oppure”. Meglio sostituirlo con un’espressione meno ambigua.	lessico
+([^\.:;\!\?\n]*?,){4}.*?[\.:;\!\?\n]		Nella tua frase ci sono troppe virgole: vuoi provare a fare una lista?	generic
+[\.\?\!] *[^\n]		Nel linguaggio facile si va a capo con ogni nuova frase.	lunghezza

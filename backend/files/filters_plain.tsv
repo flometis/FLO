@@ -1,16 +1,15 @@
-IDword>25		Questa frase è troppo lunga. Una frase ideale in plain language non dovrebbe superare le 20-25 parole. 
-lemma=qualora&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo
-lemma[0]=a&&lemma[1]=condizione&&lemma[2]=che&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo
-lemma[0]=in&&lemma[1]=caso&&lemma[2]=in&&lemma[3]=cui&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo
-lemma=nonostante&&feat[F]=.*Mood=Sub.*	anche se	Nonostante è una parola difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.
-lemma=benché&&feat[F]=.*Mood=Sub.*	anche se	Benché è difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.
-lemma=sebbene&&feat[F]=.*Mood=Sub.*	anche se	Sebbene è difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.
-lemma=nonché	e	Nonché è una parola difficile tipica della lingua burocratica. Meglio la congiunzione e. 
-lemma=altrimenti	o/oppure	Altrimenti ha alternative più semplici come o e oppure. 
-feat=SCONJ&&feat[F]=SCONJ		La frase è troppo complessa e con troppe subordinate: ti consigliamo di accorciarla.
-dep=aux:pass		Le frasi passive sono poco leggibili: preferisci le frasi di forma attiva. 
-dep=expl:impers		Non utilizzare forme impersonali
-feat=VerbForm=Ger&&lemma[-1]=(?!stare)		Non utilizzare il gerundio, perché nasconde la relazione del verbo con gli altri elementi della frase. Meglio l’indicativo. 
-feat=.*Mood=Sub.*		Il congiuntivo è un modo meno comune e più difficile: sempre meglio scegliere modi verbali semplici come l'indicativo. 
-feat=.*Mood=Cnd.*		Il condizionale è un modo meno comune e più difficile: sempre meglio scegliere modi verbali semplici come l'indicativo. 
-feat=.*Mood=Ind.*&&feat=.*Tense=Past.*		Il passato remoto è un tempo verbale poco usato. Scegli tempi più semplici come il passato prossimo o il presente storico per descrivere un evento passato. 
+IDword=25		Questa frase è troppo lunga. Una frase ideale in plain language non dovrebbe superare le 20-25 parole. 	lunghezza
+lemma=qualora&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo	lessico
+lemma[0]=a&&lemma[1]=condizione&&lemma[2]=che&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo	lessico
+lemma[0]=in&&lemma[1]=caso&&lemma[2]=in&&lemma[3]=cui&&feat[F]=.*Mood=Sub.*	se	Per introdurre una condizione è meglio usare se, perché permette di evitare un modo verbale poco comune: il congiuntivo	lessico
+lemma=nonostante&&feat[F]=.*Mood=Sub.*	anche se	Nonostante è una parola difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.	lessico
+lemma=benché&&feat[F]=.*Mood=Sub.*	anche se	Benché è difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.	lessico
+lemma=sebbene&&feat[F]=.*Mood=Sub.*	anche se	Sebbene è difficile: meglio anche se, che fa anche evitare il congiuntivo, un modo verbale più raro e difficile.	lessico
+lemma=nonché	e	Nonché è una parola difficile tipica della lingua burocratica. Meglio la congiunzione e. 	lessico
+feat=SCONJ&&feat[F]=SCONJ		La frase è troppo complessa e con troppe subordinate: ti consigliamo di accorciarla.	sintassi
+dep=aux:pass		Le frasi passive sono poco leggibili: preferisci le frasi di forma attiva. 	sintassi
+dep=expl:impers		Non utilizzare forme impersonali	sintassi
+feat=VerbForm=Ger&&lemma[-1]=(?!stare)		Non utilizzare il gerundio, perché nasconde la relazione del verbo con gli altri elementi della frase. Meglio l’indicativo. 	sintassi
+feat=.*Mood=Sub.*		Il congiuntivo è un modo meno comune e più difficile: sempre meglio scegliere modi verbali semplici come l'indicativo. 	sintassi
+feat=.*Mood=Cnd.*		Il condizionale è un modo meno comune e più difficile: sempre meglio scegliere modi verbali semplici come l'indicativo. 	sintassi
+feat=.*Mood=Ind.*&&feat=.*Tense=Past.*		Il passato remoto è un tempo verbale poco usato. Scegli tempi più semplici come il passato prossimo o il presente storico per descrivere un evento passato. 	sintassi
