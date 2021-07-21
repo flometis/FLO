@@ -37,6 +37,19 @@ p {
  cursor: pointer;
 }
 
+.correctionSpan_generic {
+  text-decoration: underline double red;
+}
+
+.correctionSpan_lunghezza {
+  background-color: lightcoral;
+ }
+ 
+.correctionSpan_synonims {
+  text-decoration: underline double blue;
+}
+
+
 [data-tooltip] {
     display: inline-block;
     position: relative; 

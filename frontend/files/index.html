@@ -97,7 +97,14 @@ function controlloTesto(mytextarea) {
 	  }
 	  explain = lastCorrect["corrections"][i]["explanation"];
 	  if (recommend == "") recommend = explain;
-    	  corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"])+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
+    	  var corrOrigText = corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"]);
+
+         if (! "category" in correct["corrections"][i]) correct["corrections"][i]["category"] = "generic";
+         if ( correct["corrections"][i]["category"] == "lunghezza" ) {
+           corrOrigText = "&#9986;";
+         }
+
+         corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan_"+correct["corrections"][i]["category"]+"\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrOrigText+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
     	}
 	mytexteditor = document.getElementById(mytextarea);
 	mytexteditor.innerHTML = corrections;
