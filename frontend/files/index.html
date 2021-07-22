@@ -18,14 +18,28 @@ var lastCorrect = new Array();
 
 var vdb2016 = new Array();
 
+function getSelectorStyle(selector) { 
+    for(var i = 0; i < document.styleSheets.length; i++) {
+        var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
+        for(var x in rules) {
+            if(typeof rules[x].selectorText == 'string') {
+              if(rules[x].selectorText == selector) {
+                return document.styleSheets[i].cssRules[x].style;
+              }
+            }
+        }
+    }
+}
+
 function unhighlight(x, i) {
-  x.style.backgroundColor="transparent";
+  x.style.cssText = getSelectorStyle("."+x.className).cssText;
   var summary = document.getElementById('details_'+i.toString());
   summary.open = false;
 }
 
 function highlight(x, i) {
-  x.style.backgroundColor="red";
+  x.style.cssText = getSelectorStyle(".correction_highlighted").cssText;
+  if (x.style.cssText=="") x.style.backgroundColor="red";
   var summary = document.getElementById('details_'+i.toString());
   summary.open = true;
 }
@@ -153,7 +167,6 @@ function fillCorrectionsList() {
         }
       }
       tmpcorrlist += "</details>";
-      document.getElementById("correction_"+i.toString()).style.textDecoration = "underline double red";
     }
 
     tmpcorrlist += "<h1>GulpEASE</h1>";

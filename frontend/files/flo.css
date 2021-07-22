@@ -37,6 +37,11 @@ p {
  cursor: pointer;
 }
 
+.correction_highlighted {
+ //text-decoration: underline double yellow;
+ background-color: lightgrey;
+}
+
 .correctionSpan_generic {
   text-decoration: underline double red;
 }
