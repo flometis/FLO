@@ -200,12 +200,12 @@ function fillCorrectionsList() {
     }
     tmpcorrlist += "</p>";
 
+    myplotslist.innerHTML = tmpcorrlist;
   } catch (error) {
     //nothing
   }
   
 
-  myplotslist.innerHTML = tmpcorrlist;
 }
 
 window.onload = function () {
