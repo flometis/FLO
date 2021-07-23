@@ -19,7 +19,13 @@ p {
 
 #correctionsList {
   margin-right: 5%;
+  min-height: 200px;
 }
+
+#plotsList {
+  margin-right: 5%}
+}
+
 
 #correctionsSection {
   width: 30%; 
@@ -64,6 +70,14 @@ p {
  
 .correctionSpan_synonims {
   text-decoration: underline double blue;
+}
+
+.detail_default {
+  display: none;
+}
+
+.detail_selected {
+  display: block;
 }
 
 

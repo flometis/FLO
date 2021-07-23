@@ -34,6 +34,7 @@ function getSelectorStyle(selector) {
 function unhighlight(x, i) {
   x.style.cssText = getSelectorStyle("."+x.className).cssText;
   var summary = document.getElementById('details_'+i.toString());
+  summary.style.cssText = getSelectorStyle(".detail_default").cssText;
   summary.open = false;
 }
 
@@ -41,6 +42,7 @@ function highlight(x, i) {
   x.style.cssText = getSelectorStyle(".correction_highlighted").cssText;
   if (x.style.cssText=="") x.style.backgroundColor="red";
   var summary = document.getElementById('details_'+i.toString());
+  summary.style.cssText = getSelectorStyle(".detail_selected").cssText;
   summary.open = true;
 }
 
@@ -144,10 +146,11 @@ function checkTextEditor() {
 
 function fillCorrectionsList() {
   mycorrlist = document.getElementById("correctionsList");
+  myplotslist = document.getElementById("plotsList");
   var tmpcorrlist = "<h1>Correzioni</h1>";
   try {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
-      tmpcorrlist += "<details id=\"details_"+i.toString()+"\">";
+      tmpcorrlist += "<details id=\"details_"+i.toString()+"\" class=\"detail_default\">";
       tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+(i+1).toString()+"</p></summary>";
       var tmpthiscorr = "";
       tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
@@ -171,8 +174,10 @@ function fillCorrectionsList() {
       }
       tmpcorrlist += "</details>";
     }
-
-    tmpcorrlist += "<h1>GulpEASE</h1>";
+    
+    mycorrlist.innerHTML = tmpcorrlist;
+    
+    tmpcorrlist = "<h1>GulpEASE</h1>";
     tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["gulpease"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][1]+"</b>: "+lastCorrect["gulpease"][i][1]+"</br>";
@@ -200,7 +205,7 @@ function fillCorrectionsList() {
   }
   
 
-  mycorrlist.innerHTML = tmpcorrlist;
+  myplotslist.innerHTML = tmpcorrlist;
 }
 
 window.onload = function () {
@@ -238,7 +243,9 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
 </td>
 <td id="correctionsSection" rowspan="3">
     <div id="correctionsList">
-    </div>    
+    </div>
+    <div id="plotsList">
+    </div>
 </td>
 </tr>
 </table>
