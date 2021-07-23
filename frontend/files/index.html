@@ -148,7 +148,7 @@ function fillCorrectionsList() {
   try {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
       tmpcorrlist += "<details id=\"details_"+i.toString()+"\">";
-      tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+i.toString()+"</p></summary>";
+      tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+(i+1).toString()+"</p></summary>";
       var tmpthiscorr = "";
       tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
       tmpthiscorr += lastCorrect["corrections"][i]["explanation"];

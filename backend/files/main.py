@@ -168,7 +168,7 @@ def correct():
         mycorrections = findBranFilter(sessionfile, rebuiltText, myfilter[0], myfilter[1], myfilter[2])
         for mycorr in mycorrections:
             #myobj["correctionsFilter"].append(mycorr)
-            if "aux:pass" in myfilter or "expl:impers" in myfilter:
+            if "aux:pass" in myfilter[0] or "expl:impers" in myfilter[0]:
                 mycorr["end"] = mycorr["end"]+1
             mycorr["start"] = tokenList[mycorr["start"]][0]
             mycorr["end"] = tokenList[mycorr["end"]][1]
