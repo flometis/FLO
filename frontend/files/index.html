@@ -117,6 +117,9 @@ function controlloTesto(mytextarea) {
          if ( correct["corrections"][i]["category"] == "lunghezza" ) {
            corrOrigText = "&#9986;";
          }
+         if ( correct["corrections"][i]["category"] == "invio" ) {
+           corrOrigText = "&#9166;";
+         }
 
          corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan_"+correct["corrections"][i]["category"]+"\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrOrigText+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
     	}

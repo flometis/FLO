@@ -168,6 +168,8 @@ def correct():
         mycorrections = findBranFilter(sessionfile, rebuiltText, myfilter[0], myfilter[1], myfilter[2])
         for mycorr in mycorrections:
             #myobj["correctionsFilter"].append(mycorr)
+            if "aux:pass" in myfilter or "expl:impers" in myfilter:
+                mycorr["end"] = mycorr["end"]+1
             mycorr["start"] = tokenList[mycorr["start"]][0]
             mycorr["end"] = tokenList[mycorr["end"]][1]
             try:
@@ -253,7 +255,7 @@ def correct():
         nestedCorrectionsPresent = False
         for i in range(len(tmpcorrs)-1):
             try:
-                if tmpcorrs[i]["category"] == "lunghezza":
+                if tmpcorrs[i]["category"] == "lunghezza" or tmpcorrs[i]["category"] == "invio":
                     tmpcorrs[i]["end"] = tmpcorrs[i]["start"]
                 if tmpcorrs[i+1]["start"] < tmpcorrs[i]["end"]:
                     myobj["correctionsNested"].append(tmpcorrs.pop(i+1))

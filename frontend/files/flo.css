@@ -50,6 +50,18 @@ p {
   background-color: lightcoral;
  }
  
+.correctionSpan_invio {
+  background-color: darkcyan;
+ }
+ 
+.correctionSpan_sintassi {
+  text-decoration: underline double teal;
+}
+
+.correctionSpan_lessico {
+  text-decoration: underline double blue;
+}
+ 
 .correctionSpan_synonims {
   text-decoration: underline double blue;
 }
