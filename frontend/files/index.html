@@ -12,6 +12,12 @@
         };*/
 </script>
 
+<!-- https://github.com/haiiaaa/chartjs-gauge -->
+<script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+<script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
+<script src="https://unpkg.com/chartjs-plugin-datalabels@0.7.0/dist/chartjs-plugin-datalabels.js"></script>
+
+
 <script>
 
 var lastCorrect = new Array();
@@ -184,7 +190,8 @@ function fillCorrectionsList() {
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][2]+"</b>: "+lastCorrect["gulpease"][i][2]+"</br>";
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][3]+"</b>: "+lastCorrect["gulpease"][i][3]+"</br>";
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][4]+"</b>: "+lastCorrect["gulpease"][i][4]+"</br>";
-    } 
+    }
+    tmpcorrlist +=  "<div id=\"canvas-holder1\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gulpChart\" ></canvas></div></br>";
 
     tmpcorrlist += "<h1>Misure Lessicometriche</h1>";
     tmpcorrlist += "<p>";
@@ -201,12 +208,76 @@ function fillCorrectionsList() {
     tmpcorrlist += "</p>";
 
     myplotslist.innerHTML = tmpcorrlist;
+
+    var stepGULP = [40, 60, 80, 100];
+    var colorGULP = ['red', 'orange', 'yellow', 'green'];
+    var labelGULP = ['Molto difficile', 'Difficile', 'Poco facile', 'Facile'];
+    gaugeChart("gulpChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')), [0,100], [stepGULP,colorGULP,labelGULP], 'GulpEASE:');
+
   } catch (error) {
     //nothing
   }
-  
 
 }
+
+function gaugeChart(elName,myvalue,myrange, mysteps, myValLabel) {
+  var ctx = document.getElementById(elName).getContext("2d");
+  var chart = new Chart(ctx, {
+  type: 'gauge',
+  data: {
+    datasets: [{
+      value: myvalue,
+      labels: mysteps[2],
+      minValue: myrange[0],
+      maxValue: myrange[1],
+      data: mysteps[0],
+      backgroundColor: mysteps[1],
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    needle: {
+      radiusPercentage: 2,
+      widthPercentage: 3.2,
+      lengthPercentage: 80,
+      color: 'rgba(0, 0, 0, 1)'
+    },
+    valueLabel: {
+      display: true,
+      formatter: (value) => {
+        return myValLabel + Math.round(value);
+      },
+      color: 'rgba(255, 255, 255, 1)',
+      backgroundColor: 'rgba(0, 0, 0, 1)',
+      borderRadius: 5,
+      padding: {
+        top: 10,
+        bottom: 10
+      }
+    },
+    plugins: {
+      datalabels: {
+        display: true,
+        formatter:  function (value, context) {
+          //return context.chart.data.labels[context.dataIndex];
+          return mysteps[2][context.dataIndex];
+        },
+        //color: function (context) {
+        //  return context.dataset.backgroundColor;
+        //},
+        color: 'rgba(0, 0, 0, 1.0)',
+        backgroundColor: null,
+        font: {
+          size: 20,
+          weight: 'bold'
+        }
+      }
+    }
+  }
+  });
+}
+
 
 window.onload = function () {
   var xhttp = new XMLHttpRequest();
