@@ -16,6 +16,7 @@
 <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
 <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
 <script src="https://unpkg.com/chartjs-plugin-datalabels@0.7.0/dist/chartjs-plugin-datalabels.js"></script>
+<script src="chartjs-plugin-annotation.js"> </script>
 
 
 <script>
@@ -184,6 +185,9 @@ function fillCorrectionsList() {
     mycorrlist.innerHTML = tmpcorrlist;
     
     tmpcorrlist = "<h1>GulpEASE</h1>";
+    tmpcorrlist +=  "<div id=\"canvas-holder1\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gaugeChart\" ></canvas></div></br>";
+    tmpcorrlist +=  "<div id=\"canvas-holder2\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gulpChart\" ></canvas></div></br>";
+    
     tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["gulpease"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][1]+"</b>: "+lastCorrect["gulpease"][i][1]+"</br>";
@@ -191,14 +195,8 @@ function fillCorrectionsList() {
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][3]+"</b>: "+lastCorrect["gulpease"][i][3]+"</br>";
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][4]+"</b>: "+lastCorrect["gulpease"][i][4]+"</br>";
     }
-    tmpcorrlist +=  "<div id=\"canvas-holder1\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gulpChart\" ></canvas></div></br>";
-
-    tmpcorrlist += "<h1>Misure Lessicometriche</h1>";
-    tmpcorrlist += "<p>";
-    for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
-      tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
-    }
     tmpcorrlist += "</p>";
+
     tmpcorrlist += "<h1>Densità lessicale</h1>";
     tmpcorrlist += "<p>";
     for (var i = 2; i < lastCorrect["densita_lessicale"].length; i++) {
@@ -206,13 +204,25 @@ function fillCorrectionsList() {
       if (i == 4) tmpcorrlist += "</br>";
     }
     tmpcorrlist += "</p>";
+    
+    tmpcorrlist += "<details>";
+    tmpcorrlist += "<summary><h1>Misure Lessicometriche</h1></summary>";
+    tmpcorrlist += "<h2>Misure Lessicometriche</h2>";
+    tmpcorrlist += "<p>";
+    for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
+      tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
+    }
+    tmpcorrlist += "</p>";
+    tmpcorrlist += "</details>";
 
     myplotslist.innerHTML = tmpcorrlist;
 
-    var stepGULP = [40, 60, 80, 100];
-    var colorGULP = ['red', 'orange', 'yellow', 'green'];
-    var labelGULP = ['Molto difficile', 'Difficile', 'Poco facile', 'Facile'];
-    gaugeChart("gulpChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')), [0,100], [stepGULP,colorGULP,labelGULP], 'GulpEASE:');
+    var stepGULP = [30, 65, 100];
+    var colorGULP = ['red', 'yellow', 'green'];
+    var labelGULP = ['Incomprensibile', 'Difficile', 'Facile da leggere'];
+    gaugeChart("gaugeChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')), [0,100], [stepGULP,colorGULP,labelGULP], 'Il tuo punteggio:');
+    
+    gulpeaseChart("gulpChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')));
 
   } catch (error) {
     //nothing
@@ -278,6 +288,82 @@ function gaugeChart(elName,myvalue,myrange, mysteps, myValLabel) {
   });
 }
 
+function gulpeaseChart(myEl,myValue){
+var ctx = document.getElementById(myEl).getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ["Licenza elementare","Licenza media","Diploma superiore"],
+    datasets: [{
+      label: 'Quasi incomprensible',
+      backgroundColor: "darkred",
+      data: [55, 35, 10],
+    }, {
+      label: 'Molto difficile',
+      backgroundColor: "red",
+      data: [15, 15, 20],
+    } , {
+      label: 'Difficile',
+      backgroundColor: "orange",
+      data: [10, 10, 10],
+    } , {
+      label: 'Facile',
+      backgroundColor: "#ffff66",
+      data: [15, 20, 30],
+    }, {
+      label: 'Molto facile',
+      backgroundColor: "lawngreen",
+      data: [5, 20, 30],
+    }],
+  },
+options: {
+    tooltips: {
+      displayColors: true,
+      callbacks:{
+        mode: 'x',
+      },
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        gridLines: {
+          display: false,
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        type: 'linear',
+      }]
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        display: false,
+      }
+    },
+    annotation: {
+      annotations: [{
+        type: 'line',
+        mode: 'horizontal',
+        scaleID: 'y-axis-0',
+        value: myValue,
+        borderColor: 'rgb(0, 0, 0)',
+        borderWidth: 4,
+        label: {
+          enabled: true,
+          content: 'Il tuo punteggio:'+Math.round(myValue).toString()
+        }
+      }]
+    },
+    legend: { position: 'bottom' },
+  }
+});
+}
+
 
 window.onload = function () {
   var xhttp = new XMLHttpRequest();
@@ -308,7 +394,7 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
  b) essere titolari di un rapporto di lavoro dipendente la cui retribuzione lorda sia superiore agli importi di cui al comma 5;     
     </div>
     </br>
-    Regole: <select id="ruleset"> <option value="plain">Plain Language</option> <option value="etr">Easy To Read</option> </select>
+    Regole: <select id="ruleset"> <option value="plain">Plain Language</option> <option value="etr" selected="selected" >Easy To Read</option> </select>
     </br>
     <button id="submitButton" onclick="checkTextEditor();">Controlla</button>
 </td>

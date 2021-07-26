@@ -11,6 +11,7 @@ p {
 #textEditor {
   border: 1px solid black; width: 90%; margin-left: 5%;
   font-family: verdana;
+  min-height: 200px;
 }
 
 #submitButton {
