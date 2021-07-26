@@ -81,6 +81,18 @@ p {
   display: block;
 }
 
+#smanettoni {
+  cursor: pointer;
+}
+
+#smanettoni::-webkit-details-marker {
+  display: none;
+}
+#smanettoni::-webkit-details-marker,
+#smanettoni::marker {
+ display: none; 
+ content: "";
+}
 
 [data-tooltip] {
     display: inline-block;

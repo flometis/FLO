@@ -205,8 +205,9 @@ function fillCorrectionsList() {
     }
     tmpcorrlist += "</p>";
     
+    tmpcorrlist += "</br></br>";
     tmpcorrlist += "<details>";
-    tmpcorrlist += "<summary><h1>Misure Lessicometriche</h1></summary>";
+    tmpcorrlist += "<summary id="smanettoni"><h1>Roba da smanettoni</h1></summary>";
     tmpcorrlist += "<h2>Misure Lessicometriche</h2>";
     tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
@@ -279,8 +280,8 @@ function gaugeChart(elName,myvalue,myrange, mysteps, myValLabel) {
         color: 'rgba(0, 0, 0, 1.0)',
         backgroundColor: null,
         font: {
-          size: 20,
-          weight: 'bold'
+          size: 16,
+          weight: 'normal'
         }
       }
     }
