@@ -51,3 +51,17 @@ FLO è ancora in fase di sviluppo, anche se ormai buona parte del progetto è st
 FLO è stato progettato per lavorare su testi in lingua italiana a tema burocratico. Può essere possibile modificarlo per lavorare su altre lingue, tra quelle permesse da Udpipe e Bran. Inoltre, si possono scrivere altre regole, semplicemente ricordandosi di aggiungere il loro caricamento.
 Le parti di testo da correggere vengono identificate grazie a delle regole (ruleset) definite nei file tsv presenti in questo repository (es: backend/files/filters_etr.tsv). Queste regole possono essere semplici espressioni regolari sulle forme grafiche (le parole del testo così come sono scritte) oppure filtri di Bran (che quindi possono verificare anche il lemma, il tag pos, o la morfologia).
 
+
+## Credits
+* Floriana Sciumbata ha progettato la logica di FLO, scritto le regole linguistiche, e curato la veste grafica
+* Floriana Sciumbata e Luca Tringali hanno scritto il codice del backend e del frontend
+* Luca Tringali ha ottimizzato il codice del backend
+* Floriana Sciumbata e Luca Tringali hanno sviluppato Bran (https://github.com/zorbaproject/Bran)
+
+* Tullio de Mauro ha realizzato il Vocabolario di Base (https://www.internazionale.it/opinione/tullio-de-mauro/2016/12/23/il-nuovo-vocabolario-di-base-della-lingua-italiana)
+* La community di Wikipedia Italia ha creato il Wikizionario, con lista dei sinonimi per ogni lemma
+* L'Institute of Formal and Applied Linguistics della Charles University, Repubblica Ceca, ha sviluppato UDpipe (https://ufal.mff.cuni.cz/udpipe)
+
+### Licenza
+FLO è rilasciato con licenza GNU GPL3. Puoi copiare, modificare, e riutilizzare questo codice, a condizione di citare gli autori originali e rilasciare eventuali applicazioni derivate da FLO con licenze Free Open Source compatibili con la GNU GPL.
+Se vuoi utilizzare FLO e il suo codice, ti chiediamo di citare questo repository e la tesi di dottorato: http://hdl.handle.net/11390/1185919
