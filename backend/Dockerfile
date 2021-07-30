@@ -13,6 +13,8 @@ RUN chown -R www-data:www-data /var/www/app
 RUN apt install -y --no-install-recommends --no-install-suggests cron
 RUN apt autoremove
 
+RUN apt install procps
+
 COPY cleanup.sh /usr/local/bin/cleanup.sh
 RUN chmod +x /usr/local/bin/cleanup.sh
 COPY crontab /etc/cron.d/cleanup-task
