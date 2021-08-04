@@ -107,9 +107,17 @@ function controlloTesto(mytextarea) {
 	  var correct = JSON.parse(xmlhttp.responseText);
         } catch (error) {
 	  console.log(error);
-          document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, impossibile calcolare le correzioni</h1></center>';
+          document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, impossibile calcolare le correzioni.</h1></center>';
         }
 	lastCorrect = correct;
+	if ("errors" in correct) {
+          if (correct["errors"] == "RAM") {
+	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, il backend non ha abbastanza memoria per gestire tutte queste richieste contemporaneamente. Riprova tra qualche minuto.</h1></center>';
+	  } else {
+	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, generico del backend. Riprova tra qualche minuto.</h1></center>';
+	  }
+	  return;
+	}
         corrections = correct["original"];
         for (var i = correct["corrections"].length -1; i > -1; i--) {
           recommend = correct["corrections"][i]["recommendedText"];

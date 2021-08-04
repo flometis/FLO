@@ -88,7 +88,16 @@ def correct():
     global legendaPos
     global vdb2016
     global useragent
-    
+   
+
+    total_memory, used_memory, free_memory = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
+    print("RAM total,used,free: ", total_memory, used_memory, free_memory)
+    if free_memory < 150:  #we should always have at least 150MB free for the rest of the os
+        result = {"errors": "RAM"}
+        myjson = json.dumps(result)
+        print("Not enough memory, stopped.")
+        return myjson
+
     if request.method == 'GET':
         myjson = index()
         return myjson
