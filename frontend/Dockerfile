@@ -6,3 +6,6 @@ RUN mkdir -p /var/www/app
 RUN chown www-data:www-data /var/www/app
 COPY files/ /var/www/app
 
+RUN mkdir -p /var/www/app/bootstrap-italia
+RUN wget -O /var/www/app/bootstrap-italia/bootstrap-italia.zip https://github.com/italia/bootstrap-italia/releases/download/v1.4.3/bootstrap-italia.zip
+RUN cd /var/www/app/bootstrap-italia && unzip /var/www/app/bootstrap-italia/bootstrap-italia.zip
