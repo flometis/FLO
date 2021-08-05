@@ -92,7 +92,7 @@ def correct():
 
     total_memory, used_memory, free_memory = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
     print("RAM total,used,free: ", total_memory, used_memory, free_memory)
-    if free_memory < 150:  #we should always have at least 150MB free for the rest of the os
+    if free_memory < 100:  #we should always have at least 100MB free for the rest of the os
         result = {"errors": "RAM"}
         myjson = json.dumps(result)
         print("Not enough memory, stopped.")
