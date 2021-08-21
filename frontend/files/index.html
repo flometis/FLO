@@ -202,6 +202,8 @@ function fillCorrectionsList() {
     mycorrlist.innerHTML = tmpcorrlist;
     
     tmpcorrlist = "<h3>GulpEASE</h3>";
+    //https://italia.github.io/bootstrap-italia/docs/componenti/alert/
+    tmpcorrlist += "<div class=\"alert alert-info alert-dismissible fade show\" role=\"alert\"><p style=\"text-size: 10pt;\">Il <a href=\"gulpease.html\" class=\"alert-link\">GulpEASE</a> è un indice che misura la leggibilità di un testo.</p> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"> <span aria-hidden=\"true\">&times;</span></button></div>";
     tmpcorrlist +=  "<div id=\"canvas-holder1\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gaugeChart\" ></canvas></div></br>";
     tmpcorrlist +=  "<div id=\"canvas-holder2\" style=\"width:100%\"><canvas style=\"width:200px !important;height:400px !important;\"id=\"gulpChart\" ></canvas></div></br>";
     
@@ -241,7 +243,7 @@ function fillCorrectionsList() {
     gaugeChart("gaugeChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')), [0,100], [stepGULP,colorGULP,labelGULP], 'Il tuo punteggio:');
     
     gulpeaseChart("gulpChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')));
-
+    
   } catch (error) {
     //nothing
   }
