@@ -57,6 +57,7 @@ Le parti di testo da correggere vengono identificate grazie a delle regole (rule
 * Floriana Sciumbata e Luca Tringali hanno scritto il codice del backend e del frontend
 * Luca Tringali ha ottimizzato il codice del backend
 * Floriana Sciumbata e Luca Tringali hanno sviluppato Bran (https://github.com/zorbaproject/Bran)
+* Il tema Bootstrap Italia è stato disegnato dal Team Digitale (https://italia.github.io/bootstrap-italia/docs/esempi/)
 
 * Tullio de Mauro ha realizzato il Vocabolario di Base (https://www.internazionale.it/opinione/tullio-de-mauro/2016/12/23/il-nuovo-vocabolario-di-base-della-lingua-italiana)
 * La community di Wikipedia Italia ha creato il Wikizionario, con lista dei sinonimi per ogni lemma

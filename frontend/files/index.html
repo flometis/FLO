@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="it">
 <!-- https://stackoverflow.com/a/25836471 -->
@@ -172,7 +171,7 @@ function checkTextEditor() {
 function fillCorrectionsList() {
   mycorrlist = document.getElementById("correctionsList");
   myplotslist = document.getElementById("plotsList");
-  var tmpcorrlist = "<h1>Correzioni</h1>";
+  var tmpcorrlist = "<h3>Correzioni</h3>";
   try {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
       tmpcorrlist += "<details id=\"details_"+i.toString()+"\" class=\"detail_default\">";
@@ -202,7 +201,7 @@ function fillCorrectionsList() {
     
     mycorrlist.innerHTML = tmpcorrlist;
     
-    tmpcorrlist = "<h1>GulpEASE</h1>";
+    tmpcorrlist = "<h3>GulpEASE</h3>";
     tmpcorrlist +=  "<div id=\"canvas-holder1\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"gaugeChart\" ></canvas></div></br>";
     tmpcorrlist +=  "<div id=\"canvas-holder2\" style=\"width:100%\"><canvas style=\"width:200px !important;height:400px !important;\"id=\"gulpChart\" ></canvas></div></br>";
     
@@ -215,7 +214,7 @@ function fillCorrectionsList() {
     }
     tmpcorrlist += "</p>";
 
-    tmpcorrlist += "<h1>Densità lessicale</h1>";
+    tmpcorrlist += "<h3>Densità lessicale</h3>";
     tmpcorrlist += "<p>";
     for (var i = 2; i < lastCorrect["densita_lessicale"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["densita_lessicale"][i][0]+"</b>: "+lastCorrect["densita_lessicale"][i][2]+"%</br>";
@@ -225,8 +224,8 @@ function fillCorrectionsList() {
     
     tmpcorrlist += "</br></br>";
     tmpcorrlist += "<details>";
-    tmpcorrlist += "<summary id=\"smanettoni\"><h1>Roba da smanettoni</h1></summary>";
-    tmpcorrlist += "<h2>Misure Lessicometriche</h2>";
+    tmpcorrlist += "<summary id=\"smanettoni\"><h3>Roba da smanettoni</h3></summary>";
+    tmpcorrlist += "<h4>Misure Lessicometriche</h4>";
     tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
@@ -510,7 +509,7 @@ window.onload = function () {
                 </div>
                 <div class="menu-wrapper">
                   <ul class="navbar-nav">
-                    <li class="nav-item active"><a class="nav-link active" href="#"><span>FLO</span><span class="sr-only">current</span></a></li>
+                    <li class="nav-item active"><a class="nav-link active" href="index.html"><span>FLO</span><span class="sr-only">current</span></a></li>
                     <!-- li class="nav-item"><a class="nav-link disabled" href="#"><span>link 3 disabilitato</span></a></li-->
                     <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="false">
@@ -526,7 +525,7 @@ window.onload = function () {
                               <h3 class="no_toc" id="heading">Heading</h3>
                             </li -->
                             <li><a class="list-item" href="linguaggiofacile.html"><span>Che cos'è</span></a></li>
-                            <li><a class="list-item" href="https://faciledaleggere.online/lineeguida/"><span>Linee guida</span></a></li>
+                            <li><a class="list-item" href="lineeguida.html"><span>Linee guida</span></a></li>
                             <li><a class="list-item" href="manuale.html"><span>Il manuale</span></a></li>
                             <li><span class="divider"></span></li>
                             <li><a class="list-item" href="plainlanguage.html"><span>Plain language</span></a></li>
@@ -534,7 +533,7 @@ window.onload = function () {
                         </div>
                       </div>
                     </li>
-		    <li class="nav-item"><a class="nav-link" href="https://faciledaleggere.online/about.html"><span>Gli autori</span></a></li>
+		    <li class="nav-item"><a class="nav-link" href="about.html"><span>Gli autori</span></a></li>
                   </ul>
                 </div>
               </div>
@@ -640,7 +639,8 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
             <h4><a href="https://faciledaleggere.online/flo/" title="Vai alla pagina: FLO">FLO</a></h4>
             <div class="link-list-wrapper">
               <ul class="footer-list link-list clearfix">
-                <li><a class="list-item" href="https://faciledaleggere.online/lineeguida/" title="Vai alla pagina: Linee Guida">Linee Guida</a></li>
+                <li><a class="list-item" href="lineeguida.html" title="Vai alla pagina: Linee Guida">Linee Guida</a></li>
+                <li><a class="list-item" href="manuale.html" title="Vai alla pagina: Linee Guida">Manuale</a></li>
               </ul>
             </div>
           </div>
