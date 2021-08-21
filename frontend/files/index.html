@@ -1,9 +1,16 @@
-<html>
+
+<!doctype html>
+<html lang="it">
 <!-- https://stackoverflow.com/a/25836471 -->
 <head>
 
 <meta charset="UTF-8">
+<link rel="stylesheet" href="./bootstrap-italia/css/bootstrap-italia.min.css">
+
 <link rel="stylesheet" href="flo.css">
+
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+
 <script>
 /*        var options = ['ul','div'];
         var subOptions = {
@@ -18,6 +25,9 @@
 <script src="https://unpkg.com/chartjs-plugin-datalabels@0.7.0/dist/chartjs-plugin-datalabels.js"></script>
 <script src="chartjs-plugin-annotation.js"> </script>
 
+<script>window.__PUBLIC_PATH__ = './bootstrap-italia/fonts'</script>
+
+<script src="./bootstrap-italia/js/bootstrap-italia.bundle.min.js"></script>
 
 <script>
 
@@ -389,11 +399,158 @@ window.onload = function () {
 </script>
 </head>
 <body>
-<h1>Facile da Leggere Online</h1>
-<p style="color: red; font-family: Courier New; font-style: bold;"> Attenzione: questa applicazione è una versione alpha, la maggioranza delle funzioni non è ancora implementata. Intanto, per saperne di più sulle linee guida, si può visitare la pagina <a href="https://faciledaleggere.online/lineeguida/">https://faciledaleggere.online/lineeguida/</a></br></p>
+ <!-- header class="it-header-wrapper it-header-sticky" -->
+  <!-- >
+  <div class="it-header-slim-wrapper">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="it-header-slim-wrapper-content">
+           <a class="d-none d-lg-block navbar-brand" href="#">LiCor</a>
+            <div class="nav-mobile">
+              <nav>
+                <a class="it-opener d-lg-none" data-toggle="collapse" href="#menu-principale" role="button" aria-expanded="false" aria-controls="menu-principale">
+                  <span>LiCor</span>
+                  <svg class="icon">
+                    <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-expand"></use>
+                  </svg>
+                </a>
+                <div class="link-list-wrapper collapse" id="menu-principale">
+                  <ul class="link-list">
+                    <li><a class="list-item" href="#">SSLMIT</a></li>
+                    <li><a class="list-item" href="#">UniTS</a></li>
+                  </ul>
+                </div>
+              </nav>
+            </div>
+	    < -->
+            <!-- div class="it-header-slim-right-zone">
+              <a class="btn btn-primary btn-icon btn-full" href="#" title="Accedi all'area personale" aria-label="Accedi all'area personale">
+                <span class="rounded-icon">
+                  <svg class="icon icon-primary">
+                    <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-user"></use>
+                  </svg>
+                </span>
+                <span class="d-none d-lg-block">Accedi all'area personale</span>
+              </a>
+            </div -->
+	    <!-- >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  < -->
+
+<div class="it-nav-wrapper">
+    <div class="it-header-center-wrapper">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="it-header-center-content-wrapper">
+              <div class="it-brand-wrapper">
+                <a href="#">
+                  <svg class="icon">
+                    <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-file"></use>
+                  </svg>
+                  <div class="it-brand-text">
+                    <h2 class="no_toc">FLO - Facile da Leggere Online</h2>
+                    <h3 class="no_toc d-none d-md-block">Il tuo assistente automatico per la scrittura in linguaggio facile</h3>
+                  </div>
+                </a>
+              </div>
+              <div class="it-right-zone">
+                <div class="it-socials d-none d-md-flex">
+                  <span>Seguici su</span>
+                  <ul>
+                    <li>
+                      <a href="https://www.facebook.com/SSLMIT/" aria-label="Facebook" target="_blank">
+                        <svg class="icon">
+                          <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-facebook"></use>
+                        </svg>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://github.com/flometis/FLO" aria-label="Github" target="_blank">
+                        <svg class="icon">
+                          <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-github"></use>
+                        </svg>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://twitter.com/F_L_Online/" target="_blank" aria-label="Twitter">
+                        <svg class="icon">
+                          <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-twitter"></use>
+                        </svg>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="it-header-navbar-wrapper">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <nav class="navbar navbar-expand-lg has-megamenu">
+              <button class="custom-navbar-toggler" type="button" aria-controls="nav10" aria-expanded="false" aria-label="Toggle navigation" data-target="#nav10">
+                <svg class="icon">
+                  <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-burger"></use>
+                </svg>
+              </button>
+              <div class="navbar-collapsable" id="nav10">
+                <div class="overlay"></div>
+                <div class="close-div sr-only">
+                  <button class="btn close-menu" type="button"><span class="it-close"></span>close</button>
+                </div>
+                <div class="menu-wrapper">
+                  <ul class="navbar-nav">
+                    <li class="nav-item active"><a class="nav-link active" href="#"><span>FLO</span><span class="sr-only">current</span></a></li>
+                    <!-- li class="nav-item"><a class="nav-link disabled" href="#"><span>link 3 disabilitato</span></a></li-->
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="false">
+                        <span>Il linguaggio facile</span>
+                        <svg class="icon icon-xs">
+                          <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-expand"></use>
+                        </svg>
+                      </a>
+                      <div class="dropdown-menu">
+                        <div class="link-list-wrapper">
+                          <ul class="link-list">
+                            <!--li>
+                              <h3 class="no_toc" id="heading">Heading</h3>
+                            </li -->
+                            <li><a class="list-item" href="linguaggiofacile.html"><span>Che cos'è</span></a></li>
+                            <li><a class="list-item" href="https://faciledaleggere.online/lineeguida/"><span>Linee guida</span></a></li>
+                            <li><a class="list-item" href="manuale.html"><span>Il manuale</span></a></li>
+                            <li><span class="divider"></span></li>
+                            <li><a class="list-item" href="plainlanguage.html"><span>Plain language</span></a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
+		    <li class="nav-item"><a class="nav-link" href="https://faciledaleggere.online/about.html"><span>Gli autori</span></a></li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /header -->
+</br>
 <table> 
 <tr>
 <td id="editorSection">
+    <div class="form-group">
     <div id="textEditor" contenteditable="true">
 Dal 7 al 15 gennaio 2021 è vietato, nell'ambito del territorio nazionale, ogni spostamento in entrata e in uscita tra i territori di diverse regioni o province autonome, salvi gli spostamenti motivati da comprovate esigenze lavorative o situazioni di necessità ovvero per motivi di salute. Si informano i cittadini che l’accesso agli uffici comunali è consentito esclusivamente previo appuntamento. </br>
 Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che percepiscono o hanno percepito una delle indennità di cui agli articoli 27, 28, 29, 30 e 38 del decreto-legge  17 marzo 2020, n. 18, convertito, con modificazioni, dalla legge 24 aprile 2020, n. 27, ovvero di una delle indennità disciplinate in attuazione dell'articolo 44 del medesimo decreto-legge ovvero di una delle indennità di cui agli articoli 84 e 85 del presente decreto-legge. Il Rem non è altresì compatibile con la presenza nel nucleo familiare di componenti che siano al momento della domanda in una delle seguenti condizioni:
@@ -402,18 +559,124 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
 </br>
  b) essere titolari di un rapporto di lavoro dipendente la cui retribuzione lorda sia superiore agli importi di cui al comma 5;     
     </div>
-    </br>
-    Regole: <select id="ruleset"> <option value="plain">Plain Language</option> <option value="etr" selected="selected" >Easy To Read</option> </select>
-    </br>
-    <button id="submitButton" onclick="checkTextEditor();">Controlla</button>
+    </div>
+    <div class="form-row">
+    <div class="form-group col text-center">
+    <div class="bootstrap-select-wrapper w-25 mx-auto">
+    <label>Regole da applicare</label>
+    <select id="ruleset"> <option value="plain">Plain Language</option> <option value="etr" selected="selected" >Linguaggio facile</option> </select>
+    </div>
+    </div>
+    </div>
+    <div class="form-row">
+    <div class="form-group col text-center">
+    <button id="submitButton" class="btn btn-primary mx-auto" onclick="checkTextEditor();">Controlla</button>
+    </div>
+    </div>
+    <div class="notification dismissable with-icon" role="alert" id="notification-esempi" aria-labelledby="notification-esempi-title">
+  <h5 id="notification-esempi-title">
+    <svg class="icon">
+      <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-info-circle"></use></svg>Versione alpha
+  </h5>
+<p style="font-family: Courier New; font-style: bold;"> Attenzione: questa applicazione è una versione alpha, la maggioranza delle funzioni non è ancora implementata. Intanto, per saperne di più sulle linee guida, si può visitare la pagina delle <a href="https://faciledaleggere.online/lineeguida/">linee guida</a></p>  
+  <button type="button" class="btn notification-close">
+    <svg class="icon">
+      <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-close"></use>
+    </svg>
+    <span class="sr-only">Chiudi notifica: Titolo notification</span>
+  </button>
+</div>
+
+<script>
+  $(document).ready(function() {
+    notificationShow('notification-esempi')
+  })
+</script>
 </td>
 <td id="correctionsSection" rowspan="3">
-    <div id="correctionsList">
+    <div id="correctionsList" class="container">
     </div>
-    <div id="plotsList">
-    </div>
+    <div id="plotsList" class="container">
+    </div
 </td>
 </tr>
 </table>
+
+<footer class="it-footer">
+  <div class="it-footer-main">
+    <div class="container">
+      <section>
+        <div class="row clearfix">
+          <div class="col-sm-12">
+            <div class="it-brand-wrapper">
+              <a href="#">
+                <svg class="icon">
+                  <use xlink:href="./bootstrap-italia/svg/sprite.svg#it-file"></use>
+                </svg>
+                <div class="it-brand-text">
+                  <h2 class="no_toc">FLO - Facile da Leggere Online</h2>
+                  <h3 class="no_toc d-none d-md-block">Il tuo assistente automatico per la scrittura in linguaggio facile</h3>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="py-4 border-white border-top">
+        <div class="row">
+          <div class="col-lg-4 col-md-4 pb-2">
+            <h4><a href="#" title="Vai alla pagina: Contatti">Contatti</a></h4>
+            <p style="color: white;">
+	    <strong>LiCor</strong><br> Dipartimento di Scienze Giuridiche, del Linguaggio, dell'Interpretazione, e della Traduzione - SSLMIT <br/> Università di Trieste <br/>Via Filzi, 14 - Trieste 34132 
+            </p>
+            <div class="link-list-wrapper">
+              <ul class="footer-list link-list clearfix">
+                <li><a class="list-item" href="mailto:fsciumbata@units.it" title="Vai alla pagina: Posta Elettronica">Posta Elettronica</a></li>
+                <!-- li><a class="list-item" href="#" title="Vai alla pagina: URP - Ufficio Relazioni con il Pubblico">URP - Ufficio Relazioni con il Pubblico</a></li -->
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 pb-2">
+            <h4><a href="https://faciledaleggere.online/flo/" title="Vai alla pagina: FLO">FLO</a></h4>
+            <div class="link-list-wrapper">
+              <ul class="footer-list link-list clearfix">
+                <li><a class="list-item" href="https://faciledaleggere.online/lineeguida/" title="Vai alla pagina: Linee Guida">Linee Guida</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 pb-2">
+            <div class="pb-2">
+              <h4><a href="#" title="Vai alla pagina: Seguici su">Seguici su</a></h4>
+              <ul class="list-inline text-left social">
+                <li class="list-inline-item"><a class="p-2 text-white" href="https://www.facebook.com/SSLMIT/" target="_blank"><svg class="icon icon-sm icon-white align-top"><use xlink:href="./bootstrap-italia/svg/sprite.svg#it-facebook"></use></svg><span class="sr-only">Facebook SSLMIT</span></a></li>
+                <li class="list-inline-item"><a class="p-2 text-white" href="https://twitter.com/F_L_Online/" target="_blank"><svg class="icon icon-sm icon-white align-top"><use xlink:href="./bootstrap-italia/svg/sprite.svg#it-twitter"></use></svg><span class="sr-only">Twitter</span></a></li>
+                <li class="list-inline-item"><a class="p-2 text-white" href="https://github.com/flometis/FLO" target="_blank"><svg class="icon icon-sm icon-white align-top"><use xlink:href="./bootstrap-italia/svg/sprite.svg#it-github"></use></svg><span class="sr-only">Github</span></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="it-footer-small-prints clearfix">
+    <div class="container">
+      <h3 class="sr-only">Sezione Link Utili</h3>
+      <ul class="it-footer-small-prints-list list-inline mb-0 d-flex flex-column flex-md-row">
+        <li class="list-inline-item"><a href="/media.html" title="Media policy">Media policy</a></li>
+        <li class="list-inline-item"><a href="https://github.com/flometis/FLO/blob/master/gpl-3.0.txt" title="Note Legali">Licenza di FLO</a></li>
+        <li class="list-inline-item"><a href="/privacy.html" title="Privacy-Cookies">Privacy policy</a></li>
+        <!-- li class="list-inline-item"><a href="#" title="Mappa del sito">Mappa del sito</a> </li -->
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<!--
+Bootstrap Italia:
+https://italia.github.io/bootstrap-italia/docs/esempi/
+https://italia.github.io/bootstrap-italia/docs/esempi/template-vuoto/
+https://italia.github.io/bootstrap-italia/docs/form/introduzione/
+-->
+
 </body>
 </html>
