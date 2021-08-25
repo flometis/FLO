@@ -74,6 +74,19 @@ function recommendSynonims(allSynonims) {
   return synonims;
 }
 
+function download(filename,text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
 function controlloTesto(mytextarea) {
   var corrections;
   //Please wait
@@ -231,6 +244,20 @@ function fillCorrectionsList() {
     tmpcorrlist += "<p>";
     for (var i = 1; i < lastCorrect["misure_lessicometriche"].length; i++) {
       tmpcorrlist += "<b>"+lastCorrect["misure_lessicometriche"][i][0]+"</b>: "+lastCorrect["misure_lessicometriche"][i][1]+"</br>";
+    }
+    tmpcorrlist += "</p>";
+    tmpcorrlist += "<h4>File di Bran</h4>";
+    tmpcorrlist += "<p>";
+    for (const [key, value] of Object.entries(lastCorrect["files"])) {
+      var ext = ".tsv";
+      if (key == "sinonimi") {
+        ext = ".txt";
+        for (const [keyS, valueS] of Object.entries(lastCorrect["files"]["sinonimi"])) {
+          tmpcorrlist += "<a href=\"data:text/plain;charset=utf-8," + encodeURIComponent(valueS) +"\" download=\""+key+"_"+keyS+ext+"\">"+key+" "+keyS+"</a>"+"</br>";
+        } 
+      } else {
+        tmpcorrlist += "<a href=\"data:text/plain;charset=utf-8," + encodeURIComponent(value) +"\" download=\""+key+ext+"\">"+key+"</a>"+"</br>";
+      }
     }
     tmpcorrlist += "</p>";
     tmpcorrlist += "</details>";

@@ -120,7 +120,7 @@ def correct():
         allfilters = allfilters1
         print("using ruleset 1")
 
-    myobj = {"original": "","corrections": []}
+    myobj = {"original": "","corrections": [], "files":{}}
     myobj["original"] = mytext
 
     if not os.path.exists('/tmp/Bran'):
@@ -140,6 +140,8 @@ def correct():
     Corpus.CSVloader([sessionfile])
     Corpus.sessionFile = sessionfile
 
+    myobj["files"]["corpus"] = loadFromTXT(sessionfile)
+
     mycol = 1
     try:
     	output = Corpus.core_misure_lessicometriche(mycol, myrecovery)
@@ -148,17 +150,20 @@ def correct():
     output = sessionfile+"-misure_lessicometriche-token.tsv"
     mis_les = loadFromTSV(output)
     myobj["misure_lessicometriche"] = mis_les 
+    myobj["files"]["misure_lessicometriche"] = loadFromTXT(output)
 
     mylevel = 2 
     output = sessionfile+"-densitalessicale-" + str(mylevel) + ".tsv"
     execWithTimeout('/var/www/app/Bran/main.py densitalessicale "'+sessionfile+'" '+ str(mylevel) +' n', output, 2)
     dens = loadFromTSV(output)
+    myobj["files"]["densitalessicale2"] = loadFromTXT(output)
     mylevel = 1
     output = sessionfile+"-densitalessicale-" + str(mylevel) + ".tsv"
     execWithTimeout('/var/www/app/Bran/main.py densitalessicale "'+sessionfile+'" '+ str(mylevel) +' n', output, 2)
     dens1 = loadFromTSV(output)
     dens.extend(dens1[1:])
     myobj["densita_lessicale"] = dens
+    myobj["files"]["densitalessicale1"] = loadFromTXT(output)
 
     doignpunct = "Y"
     myfilterGulp = "''"
@@ -166,6 +171,7 @@ def correct():
     execWithTimeout('/var/www/app/Bran/main.py gulpease "'+sessionfile+'" ' + str(doignpunct) + ' ' + str(myfilterGulp) +' n', output, 2)
     gulp = loadFromTSV(output)
     myobj["gulpease"] = gulp
+    myobj["files"]["gulpease"] = loadFromTXT(output)
 
     rebuiltText, tokenList = rebuildText(sessionfile)
     myobj["original"] = rebuiltText
@@ -203,7 +209,8 @@ def correct():
             except:
                 mycorr["category"] = "generic"
             allcorrs.append(mycorr)
-
+    
+    myobj["files"]["sinonimi"] = {}
     corpustsv = loadFromTSV(sessionfile)
     for i in range(len(corpustsv)):
         lemma =corpustsv[i][2]
@@ -228,6 +235,7 @@ def correct():
             DATA = R.json()
             try:
                 wikitxt = DATA["parse"]["wikitext"].replace("\n","")
+                myobj["files"]["sinonimi"][str(lemma)] = wikitxt
                 synStart = wikitxt.index("{{-sin-}}")
                 synEnd = wikitxt.index("{{-", synStart+8)
                 synstr = wikitxt[synStart:synEnd]
@@ -281,6 +289,7 @@ def correct():
 
     myobj["corrections"] = tmpcorrs
 
+
     myjson = json.dumps(myobj)
     return myjson
 
@@ -332,6 +341,15 @@ def loadFromTSV(fileName):
             if len(row)>0:
                 table.append(row)
     return table
+
+def loadFromTXT(fileName):
+    try:
+        text_file = open(fileName, "r", encoding='utf-8')
+        lines = text_file.read()
+        text_file.close()
+    except:
+        lines = ""
+    return lines
 
 def rebuildText(sessionfile):
     fulltext = ""
