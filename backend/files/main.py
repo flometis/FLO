@@ -172,6 +172,13 @@ def correct():
     gulp = loadFromTSV(output)
     myobj["gulpease"] = gulp
     myobj["files"]["gulpease"] = loadFromTXT(output)
+    
+    column = 2
+    output = sessionfile+"-occorrenze-lemma.tsv"
+    execWithTimeout('/var/www/app/Bran/main.py occorrenze "'+sessionfile+'" ' + str(column) +' n', output, 2)
+    occorrenzeLemmi = loadFromTSV(output)
+    myobj["lemmi"] = occorrenzeLemmi
+    myobj["files"]["lemmi"] = loadFromTXT(output)
 
     rebuiltText, tokenList = rebuildText(sessionfile)
     myobj["original"] = rebuiltText
