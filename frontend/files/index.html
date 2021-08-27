@@ -228,6 +228,21 @@ function fillCorrectionsList() {
       tmpcorrlist += "<b>"+lastCorrect["gulpease"][0][4]+"</b>: "+lastCorrect["gulpease"][i][4]+"</br>";
     }
     tmpcorrlist += "</p>";
+    
+    tmpcorrlist += "<h3>Vocabolario di Base</h3>";
+    tmpcorrlist += "<p>";
+    var vdbOcc = 0;
+    var totOcc = 0;
+    for (var i = 1; i < lastCorrect["lemmi"].length; i++) {
+      if (vdb2016.includes(lastCorrect["lemmi"][i][0])) vdbOcc+=parseInt(lastCorrect["lemmi"][i][1].replace(/\r\n|\r|\n/g, ''));
+      if (RegExp('[A-Za-z0-9]+').test(lastCorrect["lemmi"][i][0])) totOcc += parseInt(lastCorrect["lemmi"][i][1].replace(/\r\n|\r|\n/g, ''));
+    }
+    var vdbPercent = (vdbOcc / totOcc) * 100;
+    tmpcorrlist += "<b>Parole totali</b>: "+String(totOcc)+"</br>";
+    tmpcorrlist += "<b>Parole del VdB</b>: "+String(vdbOcc)+"</br>";
+    tmpcorrlist += "<b>Parole non VdB</b>: "+String(totOcc - vdbOcc)+"</br>";
+    tmpcorrlist += "<b>Percentuale di parole VdB</b>: "+String(vdbPercent.toFixed(2)) + "%</br>";
+    tmpcorrlist += "</p>";
 
     tmpcorrlist += "<h3>Densità lessicale</h3>";
     tmpcorrlist += "<p>";
