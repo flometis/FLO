@@ -31,6 +31,13 @@ Questo permette di tenere chiuse sull'host le porte 8001 e 8002 per tutte le int
 
 Se si utilizza un webproxy dockerizzato, si può direttamente far puntare ciascuna location alla porta 80 dei container, se appartiene alla **public_net**.
 
+Questi sono i moduli di Apache2 da attivare:
+```
+a2enmod ssl
+a2enmod proxy_http
+```
+
+
 ### Requisiti minimi
 I requisiti minimi della macchina virtuale per far girare i container sono:
 * Ubuntu 18.04 con Docker 20.10 e docker-compose 1.28
@@ -42,10 +49,21 @@ I requisiti minimi della macchina virtuale per far girare i container sono:
 Tutte le dipendenze sono gestite dai Dockerfile, i container dovrebbero essere autonomi. Nel container di backend viene installato Bran, prelevando l'ultima versione dal ramo di sviluppo (ramo **dev**) del repository. È necessario mantenere Bran sul ramo di sviluppo, perché il ramo stabile manca di molte caratteristiche necessarie per FLO.
 Il parser utilizzato è udpipe, perché più leggero e perché supporta diversi modelli lingusitici. Volendo utilizzare Tint, sarà necessaria molta più RAM (2GB solo per Tint) e provvedere all'avvio del server Tint. Per il resto basta modificare il codice di FLO per eseguire l'importazione in Bran da Tint invece che da Udpipe. Per il resto, il codice può rimanere lo stesso. 
 
+### Installazione
+Per installare FLO sul proprio server, basta eseguire questi comandi:
+```
+sudo -i
+cd /opt/
+git clone https://github.com/flometis/FLO.git
+cd /opt/FLO
+./first_deploy.sh
+```
+Da questo momento dovrebbero essere disponibili i due container del backend e frontend (raggiungibili da localhost sulle porte 8001 e 8002). Chiaramente, per renderli pubblici è necessario un reverse proxy (es: usando proxy_http di Apache2).
+
 ## TODO
 FLO è ancora in fase di sviluppo, anche se ormai buona parte del progetto è stata implementata. Attualmente è ancora necessario implementare almeno queste funzioni:
 - [ ] Statistiche su parole del Vocabolario di Base
-- [ ] Download dei file generati da Bran
+- [x] Download dei file generati da Bran
 
 ## Il funzionamento di FLO
 FLO è stato progettato per lavorare su testi in lingua italiana a tema burocratico. Può essere possibile modificarlo per lavorare su altre lingue, tra quelle permesse da Udpipe e Bran. Inoltre, si possono scrivere altre regole, semplicemente ricordandosi di aggiungere il loro caricamento.
