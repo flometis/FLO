@@ -1,6 +1,6 @@
 FROM python:3-slim-buster
 
-RUN apt-get update && apt-get install -y openssl
+RUN apt-get update && apt-get install -y openssl vim w3m wget
 RUN apt-get install -y git
 RUN apt-get install -y python3-pip
 RUN pip3 install Flask

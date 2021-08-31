@@ -22,7 +22,7 @@ docker exec flo_backend_1 python3 /var/www/app/Bran/main.py help
 docker cp $appdir/backend/brancfg flo_backend_1:/root/.brancfg
 docker restart flo_backend_1
 docker exec flo_backend_1 service cron start
-docker exec flo_backend_1 cat /etc/cron.d/cleanup-task | crontab -
+docker exec flo_backend_1 /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
 
 # Frontend
 cp -r $appdir/frontend/files/* /var/lib/docker/volumes/flo_frontend/_data/
