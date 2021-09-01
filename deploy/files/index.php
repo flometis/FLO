@@ -46,20 +46,20 @@ foreach($ranges as $range) {
 
 if (!$ip_is_in_range) {
   header('HTTP/1.1 403 Forbidden');
-  echo "<body>\n";
-  echo "<span style=\"color: #ff0000\">IP ".$ip." not allowed to trigger deploy.</span>\n";
-  echo "</body>\n</html>";
+  //echo "<body>\n";
+  //echo "<span style=\"color: #ff0000\">IP ".$ip." not allowed to trigger deploy.</span>\n";
+  //echo "</body>\n</html>";
   exitSafe($log);
   $log .= "IP ".$ip." not allowed to trigger deploy.\n";
 } else {
-  echo "IP ".$ip." in range";
+  //echo "IP ".$ip." in range";
   $log .= "IP ".$ip." in range.\n";
 }
 
 //Check signature
 
-$secret = getenv('GITHUB_SECRET', true);
-if ($secret !== false && $secret != "") {
+$mySecret = getenv('GITHUB_SECRET', true);
+if ($mySecret !== false && $mySecret != "") {
 if (!isset($_SERVER['HTTP_X_HUB_SIGNATURE'])) {
   $log .= "Missing HTTP_X_HUB_SIGNATURE.\n";
   exitSafe($log);
@@ -68,25 +68,25 @@ $githubHeader = $_SERVER['HTTP_X_HUB_SIGNATURE'];
 $rawPost = file_get_contents("php://input");
 $secret = str_replace("sha1=", "", $githubHeader);
 $hash = hash_hmac('sha1', $rawPost, $mySecret);
-if ($hash != $secret){
-  echo "<body>\n";
-  echo "<span style=\"color: #ff0000\">Signature invalid.</span>\n";
-  echo "</body>\n</html>";
+if (hash_equals($hash, $secret)){
+  //echo "<body>\n";
+  //echo "<span style=\"color: #ff0000\">Signature invalid.</span>\n";
+  //echo "</body>\n</html>";
   $log .= "Signature invalid\n";
   exitSafe($log);
 }
 } else {
   $log .= "Github Secret not set.\n";
-  echo "GITHUB_SECRET not set, skipping signature verification";
+  //echo "GITHUB_SECRET not set, skipping signature verification";
 }
 
 //Check user
 $github_allowed=getenv('GITHUB_ALLOWED', true);
 if ($github_allowed !== false && $github_allowed != "") {
 if (!in_array($_POST["pusher"]["name"],explode(",", $github_allowed)) ) {
-  echo "<body>\n";
-  echo "<span style=\"color: #ff0000\">User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.</span>\n";
-  echo "</body>\n</html>";
+  //echo "<body>\n";
+  //echo "<span style=\"color: #ff0000\">User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.</span>\n";
+  //echo "</body>\n</html>";
   $log .= "User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.\n";
   exitSafe($log);
 } else {
