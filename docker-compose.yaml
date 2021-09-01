@@ -39,8 +39,8 @@ services:
       - "7999:80"
     volumes:
       - data_deploy:/var/www/html
-    #environment:
-    #  - VIRTUAL_HOST=bianconiglio.cloud
+    env_file:
+      - .env
 
 volumes:
   data_frontend:
