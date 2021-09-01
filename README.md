@@ -66,8 +66,16 @@ sudo -i
 cd /opt/
 git clone https://github.com/flometis/FLO.git
 cd /opt/FLO
-./first_deploy.sh
+cp .env-sample .env
+./deploy.sh
 ```
+Il file .env ha un contenuto di questo tipo:
+```
+GITHUB_SECRET="myWebHook_Secret"
+GITHUB_ALLOWED="GitHubUser1,GitHubUser2"
+```
+Se non si è interessati al deploy on push, lo si può lasciare come si vede nel sample. Se invece si vuole il deploy on push, bisogna modificare i parametri del file .env prima di lanciare il deploy. I due parametri sono, rispettivamente, il secret impostato su GitHub con cui viene firmata la richiesta HTTP del WebHook, e la lista di utenti di GitHub che sono autorizzati a innescare il deploy on push (utile se più utenti hanno il permesso di fare push sul repository ma non ci si fida a consentire un deploy automatico da tutti). Se non si è interessati a limitare il numero di utenti che possono innescare il deploy, basta inserire una stringa vuota (cioè "").
+
 Da questo momento dovrebbero essere disponibili i due container del backend e frontend (raggiungibili da localhost sulle porte 8001 e 8002). Chiaramente, per renderli pubblici è necessario un reverse proxy (es: usando proxy_http di Apache2).
 
 ## TODO

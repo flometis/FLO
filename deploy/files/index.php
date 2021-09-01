@@ -1,5 +1,10 @@
 <?php
 
+function exitSafe($mylog) {
+  file_put_contents("deploy.log", $mylog);
+  exit;
+}
+
 $log = "";
 
 @require("./ip_in_range.php");
@@ -44,7 +49,7 @@ if (!$ip_is_in_range) {
   echo "<body>\n";
   echo "<span style=\"color: #ff0000\">IP ".$ip." not allowed to trigger deploy.</span>\n";
   echo "</body>\n</html>";
-  exit;
+  exitSafe($log);
   $log .= "IP ".$ip." not allowed to trigger deploy.\n";
 } else {
   echo "IP ".$ip." in range";
@@ -56,7 +61,8 @@ if (!$ip_is_in_range) {
 $secret = getenv('GITHUB_SECRET', true);
 if ($secret !== false && $secret != "") {
 if (!isset($_SERVER['HTTP_X_HUB_SIGNATURE'])) {
-    exit;
+  $log .= "Missing HTTP_X_HUB_SIGNATURE.\n";
+  exitSafe($log);
 }
 $githubHeader = $_SERVER['HTTP_X_HUB_SIGNATURE'];
 $rawPost = file_get_contents("php://input");
@@ -67,7 +73,7 @@ if ($hash != $secret){
   echo "<span style=\"color: #ff0000\">Signature invalid.</span>\n";
   echo "</body>\n</html>";
   $log .= "Signature invalid\n";
-  exit;
+  exitSafe($log);
 }
 } else {
   $log .= "Github Secret not set.\n";
@@ -77,13 +83,14 @@ if ($hash != $secret){
 //Check user
 $github_allowed=getenv('GITHUB_ALLOWED', true);
 if ($github_allowed !== false && $github_allowed != "") {
-print($github_allowed);
 if (!in_array($_POST["pusher"]["name"],explode(",", $github_allowed)) ) {
   echo "<body>\n";
   echo "<span style=\"color: #ff0000\">User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.</span>\n";
   echo "</body>\n</html>";
   $log .= "User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.\n";
-  exit;
+  exitSafe($log);
+} else {
+  $log .= "User ".$$_POST["pusher"]["name"]." can deploy.\n";
 }
 } else {
   $log .= "User check not enabled.\n";
@@ -91,7 +98,8 @@ if (!in_array($_POST["pusher"]["name"],explode(",", $github_allowed)) ) {
 
 //Write file
 file_put_contents("deploy.request", strtotime("now"));
-//Write log
-file_put_contents("deploy.log", $log);
+
+$log .= "All checks passed, written deploy.request file.\n";
+exitSafe($log);
 ?>
 
