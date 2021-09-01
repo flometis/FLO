@@ -28,6 +28,17 @@ services:
     volumes:
       - data_backend:/var/www/app
 
+  deploy:
+    build: ./deploy
+    restart: always
+    networks:
+      - public_net
+      - backend_net
+    ports:
+      - "7999:80"
+    #environment:
+    #  - VIRTUAL_HOST=bianconiglio.cloud
+
 volumes:
   data_frontend:
     external:

@@ -31,6 +31,16 @@ Questo permette di tenere chiuse sull'host le porte 8001 e 8002 per tutte le int
 
 Se si utilizza un webproxy dockerizzato, si può direttamente far puntare ciascuna location alla porta 80 dei container, se appartiene alla **public_net**.
 
+Se si vuole avere il deploy automatico su push, si può aggiungere la location per il webhook:
+```
+<Location /deploy>
+    ProxyPass http://127.0.0.1:7999/
+    ProxyPassReverse http://127.0.0.1:7999/
+    ProxyAddHeaders On
+    ProxyPreserveHost On
+</Location>
+```
+
 Questi sono i moduli di Apache2 da attivare:
 ```
 a2enmod ssl
