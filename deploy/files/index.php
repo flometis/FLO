@@ -1,6 +1,6 @@
 <?php
 
-@require("./ip_in_range.php")
+@require("./ip_in_range.php");
 
 $headers = apache_request_headers();
 

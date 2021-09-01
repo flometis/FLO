@@ -6,6 +6,7 @@ fromccommit=$(git log -n1 | head -n1 | sed "s/commit \([a-z0-9]*\)[ ]*.*/\1/g")
 git pull
 echo "Files changed:"
 git diff --name-only $fromccommit HEAD
+echo "----"
 dobuild=""
 if git diff --name-only $fromccommit HEAD | grep -q "Dockerfile"; then 
   echo "Dockerfile changed, forcing BUILD"
@@ -22,6 +23,8 @@ docker-compose up $dobuild -d
 for i in $(docker container ls -a | grep '\sExited (.*' | sed 's/\([^ ]*\) *[^ ]* *[^ ]* *.*/\1/g'); do docker container rm $i; done
 for i in $(docker image ls | grep '^<none>.*' | sed 's/[^ ]* *[^ ]* *\([^ ]*\) *.*/\1/g'); do docker image rm $i; done
 
+#Deploy
+cp -r $appdir/deploy/files/* /var/lib/docker/volumes/flo_deploy/_data/
 
 # Backend
 cp -r $appdir/backend/files/* /var/lib/docker/volumes/flo_backend/_data/
