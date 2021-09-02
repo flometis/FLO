@@ -25,10 +25,9 @@ then
   if [ $? -eq 0 ]; then exit; fi
 fi
 echo $$ > $PIDFILE
-if [ $? -ne 0 ]
-  then
-    echo "Could not create PID file"
-    exit 1
+if [ ! -f $PIDFILE ]; then
+  echo "Could not create PID file"
+  exit 1
 fi
 
 
