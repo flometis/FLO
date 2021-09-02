@@ -23,6 +23,8 @@ docker-compose up $dobuild -d
 for i in $(docker container ls -a | grep '\sExited (.*' | sed 's/\([^ ]*\) *[^ ]* *[^ ]* *.*/\1/g'); do docker container rm $i; done
 for i in $(docker image ls | grep '^<none>.*' | sed 's/[^ ]* *[^ ]* *\([^ ]*\) *.*/\1/g'); do docker image rm $i; done
 
+#TODO: usare rsync --delete invece di cp, per mantenere le cartelle pulite
+
 #Deploy
 cp -r $appdir/deploy/files/* /var/lib/docker/volumes/flo_deploy/_data/
 cronjob="*/2 * * * * $appdir/deploy/deployonpush.sh '/var/lib/docker/volumes/flo_deploy/_data/deploy.request' '$appdir/deploy.sh' 'FLO'"

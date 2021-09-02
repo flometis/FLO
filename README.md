@@ -59,7 +59,7 @@ I requisiti minimi della macchina virtuale per far girare i container sono:
 Tutte le dipendenze sono gestite dai Dockerfile, i container dovrebbero essere autonomi. Nel container di backend viene installato Bran, prelevando l'ultima versione dal ramo di sviluppo (ramo **dev**) del repository. È necessario mantenere Bran sul ramo di sviluppo, perché il ramo stabile manca di molte caratteristiche necessarie per FLO.
 Il parser utilizzato è udpipe, perché più leggero e perché supporta diversi modelli lingusitici. Volendo utilizzare Tint, sarà necessaria molta più RAM (2GB solo per Tint) e provvedere all'avvio del server Tint. Per il resto basta modificare il codice di FLO per eseguire l'importazione in Bran da Tint invece che da Udpipe. Per il resto, il codice può rimanere lo stesso. 
 
-### Installazione
+## Installazione
 Per installare FLO sul proprio server, basta eseguire questi comandi:
 ```
 sudo -i
@@ -77,6 +77,9 @@ GITHUB_ALLOWED="GitHubUser1,GitHubUser2"
 Se non si è interessati al deploy on push, lo si può lasciare come si vede nel sample. Se invece si vuole il deploy on push, bisogna modificare i parametri del file .env prima di lanciare il deploy. I due parametri sono, rispettivamente, il secret impostato su GitHub con cui viene firmata la richiesta HTTP del WebHook, e la lista di utenti di GitHub che sono autorizzati a innescare il deploy on push (utile se più utenti hanno il permesso di fare push sul repository ma non ci si fida a consentire un deploy automatico da tutti). Se non si è interessati a limitare il numero di utenti che possono innescare il deploy, basta inserire una stringa vuota (cioè "").
 
 Da questo momento dovrebbero essere disponibili i due container del backend e frontend (raggiungibili da localhost sulle porte 8001 e 8002). Chiaramente, per renderli pubblici è necessario un reverse proxy (es: usando proxy_http di Apache2).
+
+### Configurazione deploy on push
+Per avere sempre la versione aggiornata dell'applicazione ogni volta che viene fatto un push sul repository, bisogna creare un WebHook da GitHub. Il WebHook deve inviare i dati come **application/json**, ed è necessario impostare un secret con cui firmare tutte le richieste HTTP che vengono inviate al webhook.
 
 ## TODO
 FLO è ancora in fase di sviluppo, anche se ormai buona parte del progetto è stata implementata. Attualmente è ancora necessario implementare almeno queste funzioni:
