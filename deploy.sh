@@ -25,7 +25,7 @@ for i in $(docker image ls | grep '^<none>.*' | sed 's/[^ ]* *[^ ]* *\([^ ]*\) *
 
 #Deploy
 cp -r $appdir/deploy/files/* /var/lib/docker/volumes/flo_deploy/_data/
-cronjob="*/2 * * * * $appdir/deploy/deployonpush.sh /var/lib/docker/volumes/flo_deploy/_data/deploy.request FLO"
+cronjob="*/2 * * * * $appdir/deploy/deployonpush.sh /var/lib/docker/volumes/flo_deploy/_data/deploy.request \"$appdir\"/deploy.sh FLO"
 if ! crontab -l | grep -q "$cronjob"; then
  (crontab -l 2>/dev/null; echo "$cronjob") | crontab -
 fi
