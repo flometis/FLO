@@ -46,13 +46,9 @@ foreach($ranges as $range) {
 
 if (!$ip_is_in_range) {
   header('HTTP/1.1 403 Forbidden');
-  //echo "<body>\n";
-  //echo "<span style=\"color: #ff0000\">IP ".$ip." not allowed to trigger deploy.</span>\n";
-  //echo "</body>\n</html>";
   exitSafe($log);
   $log .= "IP ".$ip." not allowed to trigger deploy.\n";
 } else {
-  //echo "IP ".$ip." in range";
   $log .= "IP ".$ip." in range.\n";
 }
 
@@ -65,32 +61,27 @@ if (!isset($_SERVER['HTTP_X_HUB_SIGNATURE'])) {
   exitSafe($log);
 }
 $githubHeader = $_SERVER['HTTP_X_HUB_SIGNATURE'];
+//We need application/json, not form-urlencoded
 $rawPost = file_get_contents("php://input");
-$secret = str_replace("sha1=", "", $githubHeader);
+$gitSha = str_replace("sha1=", "", $githubHeader);
 $hash = hash_hmac('sha1', $rawPost, $mySecret);
-if (hash_equals($hash, $secret)){
-  //echo "<body>\n";
-  //echo "<span style=\"color: #ff0000\">Signature invalid.</span>\n";
-  //echo "</body>\n</html>";
+if (!hash_equals($gitSha, $hash)){
   $log .= "Signature invalid\n";
   exitSafe($log);
 }
 } else {
   $log .= "Github Secret not set.\n";
-  //echo "GITHUB_SECRET not set, skipping signature verification";
 }
 
 //Check user
 $github_allowed=getenv('GITHUB_ALLOWED', true);
+$myUser = json_decode($rawPost, true)["pusher"]["name"];
 if ($github_allowed !== false && $github_allowed != "") {
-if (!in_array($_POST["pusher"]["name"],explode(",", $github_allowed)) ) {
-  //echo "<body>\n";
-  //echo "<span style=\"color: #ff0000\">User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.</span>\n";
-  //echo "</body>\n</html>";
-  $log .= "User ".$$_POST["pusher"]["name"]." not allowed to trigger deploy.\n";
+if (!in_array($myUser,explode(",", $github_allowed)) ) {
+  $log .= "User ".$myUser." not allowed to trigger deploy.\n";
   exitSafe($log);
 } else {
-  $log .= "User ".$$_POST["pusher"]["name"]." can deploy.\n";
+  $log .= "User ".$myUser." can deploy.\n";
 }
 } else {
   $log .= "User check not enabled.\n";
