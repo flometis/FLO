@@ -13,6 +13,7 @@ p {
   font-family: verdana;
   font-size: 10pt;
   min-height: 200px;
+  padding: 10px;
 }
 
 #submitButton {
