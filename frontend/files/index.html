@@ -184,6 +184,7 @@ function checkTextEditor() {
 function fillCorrectionsList() {
   mycorrlist = document.getElementById("correctionsList");
   myplotslist = document.getElementById("plotsList");
+  var vdbPercent = 0;
   var tmpcorrlist = "<h3>Correzioni</h3>";
   try {
     for (var i = 0; i < lastCorrect["corrections"].length; i++) {
@@ -230,6 +231,7 @@ function fillCorrectionsList() {
     tmpcorrlist += "</p>";
     
     tmpcorrlist += "<h3>Vocabolario di Base</h3>";
+    tmpcorrlist +=  "<div id=\"canvas-holder3\" style=\"width:100%\"><canvas style=\"width:200px !important;height:200px !important;\"id=\"vdbChart\" ></canvas></div></br>";
     tmpcorrlist += "<p>";
     var vdbOcc = 0;
     var totOcc = 0;
@@ -237,7 +239,7 @@ function fillCorrectionsList() {
       if (vdb2016.includes(lastCorrect["lemmi"][i][0])) vdbOcc+=parseInt(lastCorrect["lemmi"][i][1].replace(/\r\n|\r|\n/g, ''));
       if (RegExp('[A-Za-z0-9]+').test(lastCorrect["lemmi"][i][0])) totOcc += parseInt(lastCorrect["lemmi"][i][1].replace(/\r\n|\r|\n/g, ''));
     }
-    var vdbPercent = (vdbOcc / totOcc) * 100;
+    vdbPercent = (vdbOcc / totOcc) * 100;
     tmpcorrlist += "<b>Parole totali</b>: "+String(totOcc)+"</br>";
     tmpcorrlist += "<b>Parole del VdB</b>: "+String(vdbOcc)+"</br>";
     tmpcorrlist += "<b>Parole non VdB</b>: "+String(totOcc - vdbOcc)+"</br>";
@@ -285,9 +287,10 @@ function fillCorrectionsList() {
     gaugeChart("gaugeChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')), [0,100], [stepGULP,colorGULP,labelGULP], 'Il tuo punteggio:');
     
     gulpeaseChart("gulpChart",parseInt(lastCorrect["gulpease"][1][4].replace(/\n/,'')));
+    vdbChart("vdbChart",{labels: ["Parole VdB", "Parole non VdB"], backgroundColors: ["green", "red"], chartData: [parseInt(vdbPercent), 100-parseInt(vdbPercent)]});
     
   } catch (error) {
-    //nothing
+    console.log(error);
   }
 
 }
@@ -423,6 +426,37 @@ options: {
     },
     legend: { position: 'bottom' },
   }
+});
+}
+
+function vdbChart(myEl,myValue){
+var ctx = document.getElementById(myEl).getContext('2d');
+//TODO: https://chartjs-plugin-datalabels.netlify.app/
+var myChart = new Chart(ctx, {
+  type: 'pie',
+  data: {
+    labels: myValue["labels"],
+    datasets: [{
+      label: 'Percentuale di parole',
+      backgroundColor: myValue["backgroundColors"],
+      data: myValue["chartData"],
+      hoverOffset: 4
+    }],
+  },
+  options: {
+    legend: { position: 'bottom' },
+    plugins: {
+      datalabels: {
+        display: true,
+        color: 'white',
+        backgroundColor: null,
+        font: {
+          size: 16,
+          weight: 'normal'
+        }
+      }
+    }
+  },
 });
 }
 
