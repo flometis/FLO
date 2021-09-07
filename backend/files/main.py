@@ -15,6 +15,7 @@ import requests
 
 from flask import Flask
 from flask import request
+from flask import make_response
 
 sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0]))+'/Bran')
 from forms import BranCorpus
@@ -298,7 +299,10 @@ def correct():
 
 
     myjson = json.dumps(myobj)
-    return myjson
+    resp = make_response(myjson)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+    #return myjson
 
 def execWithTimeout(mycmd, checkfile = "", mytimeout = 10):
     redirect = " &> /dev/null"
