@@ -1,4 +1,5 @@
 var pageName = window.location.pathname.split("/").pop().split(".")[0];
+if (pageName == "") pageName = "index";
 
 fetch("./header.html")
   .then(response => {

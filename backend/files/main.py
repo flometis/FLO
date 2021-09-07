@@ -224,7 +224,7 @@ def correct():
         lemma =corpustsv[i][2]
         #fix udpipe errors
         lemma = re.sub("iscere$","ire", lemma)
-        if lemma not in vdb2016 and lemma not in vdbAdd and bool(re.match('.*[^a-z].*', lemma))==False:
+        if lemma not in vdb2016 and lemma not in vdbAdd and bool(re.match('.*[^a-z].*', lemma))==False and len(lemma)>3:
             mycorr = {}
             mycorr["start"] = tokenList[i][0]
             mycorr["end"] = tokenList[i][1]

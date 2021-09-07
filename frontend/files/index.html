@@ -198,6 +198,7 @@ function checkTextEditor() {
 function fillCorrectionsList() {
   mycorrlist = document.getElementById("correctionsList");
   myplotslist = document.getElementById("plotsList");
+  if ( "corrections" in lastCorrect == false) return;
   var vdbPercent = 0;
   var tmpcorrlist = "<h3>Correzioni</h3>";
   try {
