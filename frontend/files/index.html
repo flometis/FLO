@@ -30,6 +30,14 @@
 
 <script>
 
+var APIs = [window.location.origin +"/floapi", "https://faciledaleggere.online/floapi", "https://bianconiglio.cloud/floapi"];
+
+APIs = APIs.filter(function(item, pos, self) {
+   return self.indexOf(item) == pos;
+})
+
+var apicounter = 0;
+
 var lastCorrect = new Array();
 
 var vdb2016 = new Array();
@@ -87,10 +95,11 @@ function download(filename,text) {
   document.body.removeChild(element);
 }
 
-function controlloTesto(mytextarea) {
+function controlloTesto(mytextarea, apipage) {
   var corrections;
   //Please wait
   document.getElementById('correctionsList').innerHTML = '<center><img src="flo-processing.gif" width="50%"></center>';
+  document.getElementById('plotsList').innerHTML = '';
 
   var xmlhttp = new XMLHttpRequest();
   if (window.XMLHttpRequest) {
@@ -114,7 +123,7 @@ function controlloTesto(mytextarea) {
   var mytext = document.getElementById(mytextarea).innerHTML; //.innerText.replace(/<[^>]+>/g, '');
   mytext = mytext.replace(/\r\n|\r|\n/g, '<br>');
   //console.log(mytext);
-  var apipage = window.location.origin +"/floapi";
+  //if (apipage == "") apipage = window.location.origin +"/floapi";
   var data = new FormData();
   data.append('text', mytext);
   var myRS = "plain";
@@ -130,6 +139,8 @@ function controlloTesto(mytextarea) {
         } catch (error) {
 	  console.log(error);
           document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, impossibile calcolare le correzioni.</h1></center>';
+	  apicounter+=1;
+	  setTimeout(checkTextEditor(),1000);
         }
 	lastCorrect = correct;
 	if ("errors" in correct) {
@@ -138,6 +149,8 @@ function controlloTesto(mytextarea) {
 	  } else {
 	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, generico del backend. Riprova tra qualche minuto.</h1></center>';
 	  }
+	  apicounter+=1;
+          setTimeout(checkTextEditor(),1000);
 	  return;
 	}
         corrections = correct["original"];
@@ -173,12 +186,13 @@ function controlloTesto(mytextarea) {
 
 
 function checkTextEditor() {
- mytexteditor = document.getElementById("textEditor");
- originaltext = mytexteditor.innerHTML;
- var corrections = "";
+  mytexteditor = document.getElementById("textEditor");
+  originaltext = mytexteditor.innerHTML;
+  var corrections = "";
  
- controlloTesto("textEditor");
- 
+  var i = apicounter % APIs.length;
+  controlloTesto("textEditor", APIs[i]);
+
 }
 
 function fillCorrectionsList() {
