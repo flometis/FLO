@@ -129,7 +129,10 @@ function controlloTesto(mytextarea, apipage) {
   var myRS = "plain";
   var tmpRS = document.getElementById("ruleset").value;
   if ( tmpRS == "etr") myRS = "etr";
+  var myOptin = "false";
+  if (document.getElementById("optin").checked) myOptin = "true";
   data.append('ruleset', myRS);
+  data.append('optin', myOptin);
   xmlhttp.open("POST", apipage, true);
   xmlhttp.send(data);
   xmlhttp.onreadystatechange = function() {
@@ -513,6 +516,14 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
     <div class="bootstrap-select-wrapper w-25 mx-auto">
     <label>Regole da applicare</label>
     <select id="ruleset"> <option value="plain">Plain Language</option> <option value="etr" selected="selected" >Linguaggio facile</option> </select>
+    </div>
+    </div>
+    </div>
+    <div class="form-row">
+    <div class="form-group col text-center">
+    <div class="form-check">
+    <input id="optin" value="true" type="checkbox">
+    <label for="optin">Voglio che il mio testo venga conservato <a href="privacy.html" target="_blank">anonimamente</a> per analisi statistiche</label>
     </div>
     </div>
     </div>

@@ -110,6 +110,15 @@ def correct():
     #print(mytext)
     mytext = mytext + '\n' #Fix temporaneo: Bran si aspetta una riga vuota alla fine del file
 
+    optin = False
+    try:
+        tmpoptin = request.form['optin']
+        print("Optin: "+str(tmpoptin))
+        if tmpoptin == "true":
+            optin = True
+    except:
+        pass
+
     myRS = request.form['ruleset']
 
     if myRS == "etr":
@@ -121,7 +130,7 @@ def correct():
         allfilters = allfilters1
         print("using ruleset 1")
 
-    myobj = {"original": "","corrections": [], "files":{}}
+    myobj = {"original": "","corrections": [], "files":{}, "optin": str(optin)}
     myobj["original"] = mytext
 
     if not os.path.exists('/tmp/Bran'):
@@ -133,15 +142,23 @@ def correct():
     file.write(mytext)
     file.close()
     sessionfile = tmpdir+"/testo-bran.tsv"
-    
+
     execWithTimeout("python3 /var/www/app/Bran/main.py udpipeImport "+origfile+" it-IT n", sessionfile, 10)
     Corpus = BranCorpus.BranCorpus(corpuscols, legendaPos, ignoretext, dimList, tablewidget="cli")
     Corpus.loadPersonalCFG()
     myrecovery = False #"n"
     Corpus.CSVloader([sessionfile])
     Corpus.sessionFile = sessionfile
-
+    
     myobj["files"]["corpus"] = loadFromTXT(sessionfile)
+
+    if optin:
+        if not os.path.exists('/var/www/app/BranKeep'):
+            os.makedirs('/var/www/app/BranKeep')
+        keepdir = tempfile.NamedTemporaryFile(dir="/var/www/app/BranKeep").name
+        os.makedirs(keepdir)
+        optinfile = keepdir+"/corpus.tsv"
+        os.system("cp " +sessionfile+" "+optinfile)
 
     mycol = 1
     try:
