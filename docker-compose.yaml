@@ -30,7 +30,7 @@ services:
 
   deploy:
     #build: ./deploy
-    image: php:7.2-apache
+    image: php:8-apache
     restart: always
     networks:
       - public_net
