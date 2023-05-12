@@ -304,7 +304,7 @@ def correct(token,request):
 
     myobj["corrections"] = tmpcorrs
     
-    print(myobj)
+    #print(myobj)
 
     myjson = json.dumps(myobj)
     fileout = '/tmp/Bran/' + token + '/result.json'
