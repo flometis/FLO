@@ -406,7 +406,7 @@ def findBranFilter(sessionfile, mytext, filtertext, recommendedText, explanation
     mycorrections = []
     hkey = "token"
     mycol = 1
-    cleanedfilter = re.sub("[^a-zA-Z0-9\[\]]", "", filtertext)
+    cleanedfilter = re.sub("[^a-zA-Z0-9\[\]]", "", filtertext)[:50]
     output = sessionfile + "-cerca-" + hkey + "-filtro-" + cleanedfilter + ".tsv"
     #print('/var/www/app/Bran/main.py cerca "'+sessionfile+'" '+ str(mycol) + ' "' + filtertext +'" n')
     #print(output)
