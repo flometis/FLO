@@ -30,7 +30,8 @@
 
 <script>
 
-var APIs = [window.location.origin +"/floapi", "https://faciledaleggere.online/floapi", "https://bianconiglio.cloud/floapi"];
+//Add here other endpoints if you have multiple backends
+var APIs = [ window.location ];
 
 APIs = APIs.filter(function(item, pos, self) {
    return self.indexOf(item) == pos;
@@ -41,6 +42,9 @@ var apicounter = 0;
 var lastCorrect = new Array();
 
 var vdb2016 = new Array();
+
+var correct = {};
+var checkCorrInt = undefined;
 
 function getSelectorStyle(selector) { 
     for(var i = 0; i < document.styleSheets.length; i++) {
@@ -95,6 +99,79 @@ function download(filename,text) {
   document.body.removeChild(element);
 }
 
+function checkCorrections(token, mytextarea, apipage) {
+var corrections;
+	  var xmlhttp2 = new XMLHttpRequest();
+  if (window.XMLHttpRequest) {
+      xmlhttp2 = new XMLHttpRequest();
+      if (xmlhttp2.overrideMimeType) {
+    	xmlhttp2.overrideMimeType('text/plain');
+      }
+  } else if (window.ActiveXObject) {
+      // IE
+      try { xmlhttp2 = new ActiveXObject("Msxml2.XMLHTTP"); }
+      catch (e) {
+	try { xmlhttp2 = new ActiveXObject("Microsoft.XMLHTTP"); }
+	catch (e) {}
+      }
+  }
+
+  if (!xmlhttp2) {
+      alert('Cannot create an XMLHTTP instance');
+  }
+  xmlhttp2.open("GET", apipage+"/corrected?token="+token, true);
+  xmlhttp2.send();
+	  xmlhttp2.onreadystatechange = function() {
+	  if (xmlhttp2.readyState == XMLHttpRequest.DONE) {
+	  correct = JSON.parse(xmlhttp2.responseText);
+	  lastCorrect = correct;
+	if ("errors" in correct) {
+          if (correct["errors"] == "RAM") {
+	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, il backend non ha abbastanza memoria per gestire tutte queste richieste contemporaneamente. Riprova tra qualche minuto.</h1></center>';
+	  } else {
+	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, generico del backend. Riprova tra qualche minuto.</h1></center>';
+	  }
+	  apicounter+=1;
+          setTimeout(checkTextEditor(),1000);
+	  return;
+	}
+	
+	if ("original" in correct) {
+  //console.log("Got corrections");
+  clearInterval(checkCorrInt);
+  } else {
+  return;
+  }
+        corrections = correct["original"];
+        for (var i = correct["corrections"].length -1; i > -1; i--) {
+          recommend = correct["corrections"][i]["recommendedText"];
+	  if ("synonims" in correct["corrections"][i]) {
+            var synonims = recommendSynonims(correct["corrections"][i]["synonims"]);
+            if (synonims == "") synonims = "una parola più semplice";
+            recommend = recommend + synonims;
+	  }
+	  explain = lastCorrect["corrections"][i]["explanation"];
+	  if (recommend == "") recommend = explain;
+    	  var corrOrigText = corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"]);
+
+         if (! "category" in correct["corrections"][i]) correct["corrections"][i]["category"] = "generic";
+         if ( correct["corrections"][i]["category"] == "lunghezza" ) {
+           corrOrigText = "&#9986;";
+         }
+         if ( correct["corrections"][i]["category"] == "invio" ) {
+           corrOrigText = "&#9166;";
+         }
+
+         corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan_"+correct["corrections"][i]["category"]+"\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrOrigText+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
+    	}
+	mytexteditor = document.getElementById(mytextarea);
+	mytexteditor.innerHTML = corrections;
+        fillCorrectionsList();
+	  }
+	  }
+  
+}
+
 function controlloTesto(mytextarea, apipage) {
   var corrections;
   //Please wait
@@ -133,54 +210,24 @@ function controlloTesto(mytextarea, apipage) {
   if (document.getElementById("optin").checked) myOptin = "true";
   data.append('ruleset', myRS);
   data.append('optin', myOptin);
-  xmlhttp.open("POST", apipage, true);
+  xmlhttp.open("POST", apipage+"/correct", true);
   xmlhttp.send(data);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == XMLHttpRequest.DONE) {
         try {
-	  var correct = JSON.parse(xmlhttp.responseText);
+	  correct = {};
+	  var token = JSON.parse(xmlhttp.responseText)["token"];
+	  //TODO: 
+	  checkCorrInt = setInterval(function () {checkCorrections(token,mytextarea,apipage)}, 5000);
+	  //if ("original" in correct) clearInterval(checkCorrInt);
+	  
         } catch (error) {
 	  console.log(error);
           document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, impossibile calcolare le correzioni.</h1></center>';
 	  apicounter+=1;
 	  setTimeout(checkTextEditor(),1000);
-        }
-	lastCorrect = correct;
-	if ("errors" in correct) {
-          if (correct["errors"] == "RAM") {
-	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, il backend non ha abbastanza memoria per gestire tutte queste richieste contemporaneamente. Riprova tra qualche minuto.</h1></center>';
-	  } else {
-	    document.getElementById('correctionsList').innerHTML = '<center><h1>Errore, generico del backend. Riprova tra qualche minuto.</h1></center>';
-	  }
-	  apicounter+=1;
-          setTimeout(checkTextEditor(),1000);
-	  return;
-	}
-        corrections = correct["original"];
-        for (var i = correct["corrections"].length -1; i > -1; i--) {
-          recommend = correct["corrections"][i]["recommendedText"];
-	  if ("synonims" in correct["corrections"][i]) {
-            var synonims = recommendSynonims(correct["corrections"][i]["synonims"]);
-            if (synonims == "") synonims = "una parola più semplice";
-            recommend = recommend + synonims;
-	  }
-	  explain = lastCorrect["corrections"][i]["explanation"];
-	  if (recommend == "") recommend = explain;
-    	  var corrOrigText = corrections.substring(correct["corrections"][i]["start"],correct["corrections"][i]["end"]);
+        }        
 
-         if (! "category" in correct["corrections"][i]) correct["corrections"][i]["category"] = "generic";
-         if ( correct["corrections"][i]["category"] == "lunghezza" ) {
-           corrOrigText = "&#9986;";
-         }
-         if ( correct["corrections"][i]["category"] == "invio" ) {
-           corrOrigText = "&#9166;";
-         }
-
-         corrections = corrections.substring(0,correct["corrections"][i]["start"])+"<span id=\"correction_"+i.toString()+"\" class=\"correctionSpan_"+correct["corrections"][i]["category"]+"\" data-tooltip=\""+recommend.replace(/\r\n|\r|\n/g, '')+"\" data-tooltip-position=\"bottom\" onmouseover=\"highlight(this,"+i.toString()+")\" onmouseout=\"unhighlight(this,"+i.toString()+")\">"+corrOrigText+"</span>"+corrections.substring(correct["corrections"][i]["end"], corrections.length);
-    	}
-	mytexteditor = document.getElementById(mytextarea);
-	mytexteditor.innerHTML = corrections;
-        fillCorrectionsList();
     }
   }
 

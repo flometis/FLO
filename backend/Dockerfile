@@ -14,6 +14,7 @@ RUN apt install -y --no-install-recommends --no-install-suggests cron
 RUN apt autoremove
 
 RUN apt install -y procps
+COPY brancfg /root/.brancfg
 
 COPY cleanup.sh /usr/local/bin/cleanup.sh
 RUN chmod +x /usr/local/bin/cleanup.sh
@@ -22,4 +23,7 @@ RUN chmod 0644 /etc/cron.d/cleanup-task
 #RUN service cron enable
 #RUN service cron start
 
-CMD /var/www/app/main.py
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD /entrypoint.sh
