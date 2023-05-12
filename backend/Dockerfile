@@ -14,6 +14,7 @@ RUN apt install -y --no-install-recommends --no-install-suggests cron
 RUN apt autoremove
 
 RUN apt install -y procps
+COPY brancfg /root/.brancfg
 
 COPY cleanup.sh /usr/local/bin/cleanup.sh
 RUN chmod +x /usr/local/bin/cleanup.sh
