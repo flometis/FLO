@@ -134,4 +134,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         
-    app.run(debug=True, host='0.0.0.0', port=int("8000"), threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
