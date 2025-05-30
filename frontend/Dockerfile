@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM nginx:1.22
 
 RUN apt-get update && apt-get install -y openssl wget curl w3m vim unzip
 #RUN openssl req -x509 -nodes -days 2000 -subj "/C=CA/ST=QC/O=Company, Inc./CN=localhost" -addext "subjectAltName=DNS:localhost" -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt;

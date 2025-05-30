@@ -13,14 +13,19 @@ import signal
 import requests
 #python3 -m pip install requests
 
-pipepath = "/tmp/Bran/pipe"
+import threading
+
 branpath = os.path.abspath(os.path.dirname(sys.argv[0]))+'/Bran'
 
 #sys.path.append()
 sys.path.append(branpath)
 from forms import BranCorpus
 
+auth = os.environ.get("AUTH_TOKEN")
+apiurl = os.environ.get("API_URL")
 
+min_memory = int(os.environ.get("MIN_MEMORY", 100))  #Minimum MB of RAM available to open another thread
+max_threads = int(os.environ.get("MAX_THREADS", 10))  #Maximum number of concurrent jobs
 
 allregex = []
 allfilters = []
@@ -82,15 +87,6 @@ def correct(token,request):
     global legendaPos
     global vdb2016
     global useragent
-   
-
-    total_memory, used_memory, free_memory = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
-    print("RAM total,used,free: ", total_memory, used_memory, free_memory)
-    if free_memory < 100:  #we should always have at least 100MB free for the rest of the os
-        result = {"errors": "RAM"}
-        myjson = json.dumps(result)
-        print("Not enough memory, stopped.")
-        return myjson
 
     
     mytext = request['text']
@@ -125,15 +121,17 @@ def correct(token,request):
 
     if not os.path.exists('/tmp/Bran'):
         os.makedirs('/tmp/Bran')
-    tmpdir = tempfile.NamedTemporaryFile(dir="/tmp/Bran").name
+    tmpdir = '/tmp/Bran/' + token   #tempfile.NamedTemporaryFile(dir="/tmp/Bran").name
     os.makedirs(tmpdir)
     origfile = tmpdir+"/testo.txt"
-    file = open(origfile,"w", encoding='utf-8')
-    file.write(mytext)
-    file.close()
+    if not os.path.isfile(origfile):
+        file = open(origfile,"w", encoding='utf-8')
+        file.write(mytext)
+        file.close()
     sessionfile = tmpdir+"/testo-bran.tsv"
 
-    execWithTimeout("python3 " + branpath + "/main.py udpipeImport "+origfile+" it-IT n", sessionfile, 10)
+    if not os.path.isfile(sessionfile):
+        execWithTimeout("python3 " + branpath + "/main.py udpipeImport "+origfile+" it-IT n", sessionfile, 10)
     Corpus = BranCorpus.BranCorpus(corpuscols, legendaPos, ignoretext, dimList, tablewidget="cli")
     Corpus.loadPersonalCFG()
     myrecovery = False #"n"
@@ -311,10 +309,12 @@ def correct(token,request):
     file = open(fileout,"w", encoding='utf-8')
     file.write(myjson)
     file.close()
+
+    x = requests.post(apiurl+"/done",
+                      data={"token": token, "results": myjson}, headers=headers)
+    print(x.text)
     print("DONE processing "+token)
-    #resp = make_response(myjson)
-    #resp.headers['Access-Control-Allow-Origin'] = '*'
-    #return resp
+
     return
     
 
@@ -396,9 +396,9 @@ def rebuildText(sessionfile):
 
 def remUselessSpaces(tempstring):
     punt = " (["+re.escape(".,;!?)")+ "])"
-    tmpstring = re.sub(punt, "\g<1>", tempstring, flags=re.IGNORECASE)
+    tmpstring = re.sub(punt, r'\g<1>', tempstring, flags=re.IGNORECASE)
     punt = "(["+re.escape("'’(")+ "]) "
-    tmpstring = re.sub(punt, "\g<1>", tmpstring, flags=re.IGNORECASE|re.DOTALL)
+    tmpstring = re.sub(punt, r'\g<1>', tmpstring, flags=re.IGNORECASE|re.DOTALL)
     return tmpstring
 
 def findBranFilter(sessionfile, mytext, filtertext, recommendedText, explanation):
@@ -436,7 +436,9 @@ def findRegex(mytext, pattern, recommendedText, explanation):
         mycorrections.append(mycorr)
     return mycorrections
 
+
 if __name__ == '__main__':
+    print("FLO worker instance")
     allregex1 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_plain.tsv")
     allfilters1 = loadFiltersFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/filters_plain.tsv")
     allregex2 = loadRegexFromTSV(os.path.abspath(os.path.dirname(sys.argv[0]))+"/regex_etr.tsv")
@@ -449,16 +451,37 @@ if __name__ == '__main__':
     vdbAdd = ["dal","il"]
     
     loadBranData()
-    #Read from pipe
-    while True:
-        with open(pipepath) as fifo:
-            for line in fifo:
-                token = line.replace("\n","")
-                print(token)
-                filein = '/tmp/Bran/' + token + '/request.json'
-                text_file = open(filein, "r")
-                myjson = text_file.read().replace("\n", "").replace("\r", "").split("####")[0]
-                text_file.close()
-                request = json.loads(myjson)
-                correct(token,request)
+
+    active = True
+    while active:
+        ready_to_work = True
+        total_memory, used_memory, free_memory = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
+        #print("RAM total,used,free: ", total_memory, used_memory, free_memory)
+        if free_memory < min_memory:  #we should always have at least 100MB free for the rest of the os
+            print("Not enough memory, stopped.")
+            ready_to_work = False
+        if threading.active_count() >= max_threads:
+            print("Already too many threads running")
+            ready_to_work = False
+        if ready_to_work:
+            #print("check for new tasks")
+            headers = {"Authorization": "Bearer " + auth}
+            x = requests.get(apiurl+"/todo", headers=headers)
+            #print(x.text)
+            myobj = json.loads(x.text)
+            try:
+                token = myobj["token"]
+                request = myobj["request"]
+            except:
+                #print("Nothing to do")
+                time.sleep(1)
+                continue
+            try:
+                t = threading.Thread(target=correct, args=(token,request))
+                t.start()
+            except:
+                # TODO: mark this token as failed on api db
+                pass
+        time.sleep(1)
+
     

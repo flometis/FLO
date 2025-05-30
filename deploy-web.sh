@@ -34,16 +34,16 @@ fi
 
 # Backend
 cp -r $appdir/backend/files/* /var/lib/docker/volumes/flo_backend/_data/
-git clone https://github.com/zorbaproject/Bran.git /var/lib/docker/volumes/flo_backend/_data/Bran 2> /dev/null | true
-cd /var/lib/docker/volumes/flo_backend/_data/Bran
-git checkout dev
-git pull
 chmod +x /var/lib/docker/volumes/flo_backend/_data/main.py
-docker exec flo_backend_1 python3 /var/www/app/Bran/main.py help
-docker cp $appdir/backend/brancfg flo_backend_1:/root/.brancfg
 docker restart flo_backend_1
 docker exec flo_backend_1 service cron start
 docker exec flo_backend_1 /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
 
 # Frontend
 cp -r $appdir/frontend/files/* /var/lib/docker/volumes/flo_frontend/_data/
+
+# Worker
+if docker ps | grep -q 'flo.worker.1'; then
+  $appdir/deploy-worker.sh
+fi
+

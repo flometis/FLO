@@ -66,10 +66,14 @@ sudo -i
 cd /opt/
 git clone https://github.com/flometis/FLO.git
 cd /opt/FLO
-cp .env-sample .env
+cp docker-compose-full.yaml docker-compose.yaml
+cp .env.deploy-sample .env.deploy
+cp .env.api-sample .env.api
 ./deploy.sh
 ```
-Il file .env ha un contenuto di questo tipo:
+Il file docker-compose-full.yaml può in realtà essere scomposto in due parti: una solo per il worker (su una macchina dedicata), e una per tutto il resto. Basta commentare i servizi che non si vogliono sulla macchina su cui si sta facendo il deploy. Se si utilizza il file intero, tutti i servizi (worker incluso) gireranno sulla stessa macchina.
+
+Il file .env.deploy ha un contenuto di questo tipo:
 ```
 GITHUB_SECRET="myWebHook_Secret"
 GITHUB_ALLOWED="GitHubUser1,GitHubUser2"

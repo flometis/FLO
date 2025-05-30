@@ -12,10 +12,10 @@ services:
     volumes:
       - data_frontend:/var/www/app
       - ./frontend/default.conf:/etc/nginx/sites-enabled/default
-    #environment:
-    #  - VIRTUAL_HOST=bianconiglio.cloud
-    #  - LETSENCRYPT_HOST=bianconiglio.cloud
-    #  - LETSENCRYPT_EMAIL=admin@bianconiglio.cloud
+    environment:
+      - VIRTUAL_HOST=faciledaleggere.online,www.faciledaleggere.online
+      - LETSENCRYPT_HOST=faciledaleggere.online,www.faciledaleggere.online
+      - LETSENCRYPT_EMAIL=admin@bianconiglio.cloud
 
   backend:
     build: ./backend
@@ -25,8 +25,24 @@ services:
       - backend_net
     ports:
       - "127.0.0.1:8002:80"
+    environment:
+      - VIRTUAL_HOST=api.faciledaleggere.online
+      - LETSENCRYPT_HOST=api.faciledaleggere.online
     volumes:
       - data_backend:/var/www/app
+    env_file:
+      - .env.api
+
+  worker:
+    build: ./worker
+    restart: always
+    networks:
+      - public_net
+      - backend_net
+    volumes:
+      - data_worker:/var/www/app
+    env_file:
+      - .env.api
 
   deploy:
     #build: ./deploy
@@ -40,7 +56,7 @@ services:
     volumes:
       - data_deploy:/var/www/html
     env_file:
-      - .env
+      - .env.deploy
 
 volumes:
   data_frontend:
@@ -49,6 +65,9 @@ volumes:
   data_backend:
     external:
       name: flo_backend
+  data_worker:
+    external:
+      name: flo_worker
   data_deploy:
     external:
       name: flo_deploy
@@ -59,3 +78,4 @@ networks:
     external:
       name: public_net
   backend_net:
+
