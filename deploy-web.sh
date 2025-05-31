@@ -19,7 +19,11 @@ docker volume create flo_deploy 2> /dev/null
 
 docker network create public_net 2> /dev/null
 
-docker-compose up $dobuild -d
+if whereis docker-compose | grep -q '\/'; then
+  docker-compose up $dobuild -d
+else
+  docker compose up $dobuild -d
+fi
 for i in $(docker container ls -a | grep '\sExited (.*' | sed 's/\([^ ]*\) *[^ ]* *[^ ]* *.*/\1/g'); do docker container rm $i; done
 for i in $(docker image ls | grep '^<none>.*' | sed 's/[^ ]* *[^ ]* *\([^ ]*\) *.*/\1/g'); do docker image rm $i; done
 
@@ -35,9 +39,10 @@ fi
 # Backend
 cp -r $appdir/backend/files/* /var/lib/docker/volumes/flo_backend/_data/
 chmod +x /var/lib/docker/volumes/flo_backend/_data/main.py
-docker restart flo_backend_1
-docker exec flo_backend_1 service cron start
-docker exec flo_backend_1 /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
+cntName=$(docker ps | grep -o 'flo.backend.1')
+docker restart $cntName
+docker exec $cntName service cron start
+docker exec $cntName /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
 
 # Frontend
 cp -r $appdir/frontend/files/* /var/lib/docker/volumes/flo_frontend/_data/

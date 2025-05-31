@@ -1,6 +1,8 @@
 version: "3.8"
 
 services:
+
+# Web interface        
   frontend:
     build: ./frontend
     restart: always
@@ -32,17 +34,10 @@ services:
       - data_backend:/var/www/app
     env_file:
       - .env.api
-
-  worker:
-    build: ./worker
-    restart: always
-    networks:
-      - public_net
-      - backend_net
-    volumes:
-      - data_worker:/var/www/app
-    env_file:
-      - .env.api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
 
   deploy:
     #build: ./deploy
@@ -57,6 +52,23 @@ services:
       - data_deploy:/var/www/html
     env_file:
       - .env.deploy
+
+ # Worker
+
+  worker:
+    build: ./worker
+    restart: always
+    networks:
+      - backend_net
+    volumes:
+      - data_worker:/var/www/app
+    env_file:
+      - .env.api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
 
 volumes:
   data_frontend:

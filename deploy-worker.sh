@@ -17,7 +17,12 @@ docker volume create flo_worker 2> /dev/null
 
 #docker network create public_net 2> /dev/null
 
-docker-compose up $dobuild -d
+# supporto per docker compose oltre che per docker-compose
+if whereis docker-compose | grep -q '\/'; then
+  docker-compose up $dobuild -d
+else
+  docker compose up $dobuild -d
+fi
 if docker ps | grep -q 'flo.backend.1'; then
   echo 'Containers were already cleaned up when deploying backend'
 else
@@ -33,9 +38,10 @@ git clone https://github.com/zorbaproject/Bran.git /var/lib/docker/volumes/flo_w
 cd /var/lib/docker/volumes/flo_worker/_data/Bran
 git checkout dev
 git pull
-docker exec flo_worker_1 python3 /var/www/app/Bran/main.py help
-docker cp $appdir/worker/brancfg flo_worker_1:/root/.brancfg
-docker restart flo_worker_1
-docker exec flo_worker_1 service cron start
-docker exec flo_worker_1 /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
+cntName=$(docker ps | grep -o 'flo.worker.1')
+docker exec $cntName python3 /var/www/app/Bran/main.py help
+docker cp $appdir/worker/brancfg $cntName:/root/.brancfg
+docker restart $cntName
+docker exec $cntName service cron start
+docker exec $cntName /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
 

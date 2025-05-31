@@ -73,6 +73,13 @@ cp .env.api-sample .env.api
 ```
 Il file docker-compose-full.yaml può in realtà essere scomposto in due parti: una solo per il worker (su una macchina dedicata), e una per tutto il resto. Basta commentare i servizi che non si vogliono sulla macchina su cui si sta facendo il deploy. Se si utilizza il file intero, tutti i servizi (worker incluso) gireranno sulla stessa macchina.
 
+Il file .env.api ha un contenuto di questo tipo:
+```
+AUTH_TOKEN=passwordmoltosicura
+API_URL=http://backend
+```
+Nel caso del backend possono essere indicati più token, separati da virgola. Ciascun token dovrebbe essere assegnato a uno specifico worker (se ce n'è più di uno). Nel caso del worker, il token deve essere solo il suo. Da notare che l'URL non deve terminare con "/", e che non deve subire redirect (es: da http a https), altrimenti le richieste POST non passano.
+
 Il file .env.deploy ha un contenuto di questo tipo:
 ```
 GITHUB_SECRET="myWebHook_Secret"
