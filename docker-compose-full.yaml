@@ -69,6 +69,24 @@ services:
       options:
         max-size: "50m"
 
+  worker-ml:
+    build: ./worker-ml
+    restart: always
+    networks:
+      - backend_net
+    volumes:
+      - data_worker:/var/www/worker
+      - data_worker_ml:/var/www/app
+      - cache_worker_ml:/root/.cache
+    env_file:
+      - .env.api
+    environment:
+      - EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2,sentence-transformers/distiluse-base-multilingual-cased-v2,ArchitRastogi/bert-base-italian-embeddings,nickprock/sentence-bert-base-italian-uncased,GroNLP/gpt2-medium-italian-embeddings,dbmdz/bert-base-italian-xxl-uncased
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
 
 volumes:
   data_frontend:
@@ -77,13 +95,18 @@ volumes:
   data_backend:
     external:
       name: flo_backend
-  data_worker:
-    external:
-      name: flo_worker
   data_deploy:
     external:
       name: flo_deploy
-
+  data_worker:
+    external:
+      name: flo_worker
+  data_worker_ml:
+    external:
+      name: flo_worker-ml
+  cache_worker_ml:
+    external:
+      name: flo_worker-ml_cache
 
 networks:
   public_net:

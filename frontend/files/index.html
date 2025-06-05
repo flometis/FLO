@@ -31,7 +31,8 @@
 <script>
 
 //Add here other endpoints if you have multiple backends
-var APIs = [ window.location ];
+//var APIs = [ window.location ];
+var APIs = [ 'https://api.faciledaleggere.online' ]
 //var APIs = [ 'http://127.0.0.1:8002' ];
 
 APIs = APIs.filter(function(item, pos, self) {
@@ -257,7 +258,31 @@ function fillCorrectionsList() {
       tmpcorrlist += "<details id=\"details_"+i.toString()+"\" class=\"detail_default\">";
       tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+(i+1).toString()+"</p></summary>";
       var tmpthiscorr = "";
-      tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p></span>";
+      tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p>";
+      if ("synonims" in lastCorrect["corrections"][i]) {
+          var recSynWiki = recommendSynonims(lastCorrect["corrections"][i]["synonims"]);
+          if (recSynWiki != "") {
+              tmpcorrlist += "<p>";
+              tmpcorrlist += "Il <b>Wikizionario</b> propone: </br>" + recSynWiki;
+              tmpcorrlist += "</p>";
+          }
+      }
+      if ("synonimsOptions" in lastCorrect["corrections"][i]) {
+          tmpcorrlist += "<p>";
+	  for (const [Synkey, Synvalue] of Object.entries(lastCorrect["corrections"][i]["synonimsOptions"])) {
+              tmpcorrlist += "<b>"+Synkey+"</b> propone:</br>";
+              let sortedSyn = Object.fromEntries(
+                  Object.entries(Synvalue).sort(([, a], [, b]) => b - a)
+              );
+              for (const [Synoptkey, Synoptvalue] of Object.entries(sortedSyn)) {
+	          tmpcorrlist += Synoptkey + ", ";
+              }
+              if (tmpcorrlist.slice(-2,-1) == ",") tmpcorrlist = tmpcorrlist.slice(0, -2);
+              tmpcorrlist += "</br>";
+          }
+          tmpcorrlist += "</p>";
+      }
+      tmpcorrlist += "</span>";
       tmpthiscorr += lastCorrect["corrections"][i]["explanation"];
       for (var n = 0; n < lastCorrect["correctionsNested"].length; n++) {
         if (lastCorrect["correctionsNested"][n]["start"]>lastCorrect["corrections"][i]["start"] && lastCorrect["correctionsNested"][n]["start"]<lastCorrect["corrections"][i]["end"]) {

@@ -14,6 +14,8 @@ if git diff --name-only $fromccommit HEAD | grep -q "Dockerfile"; then
 fi
 
 docker volume create flo_worker 2> /dev/null
+docker volume create flo_worker-ml 2> /dev/null
+docker volume create flo_worker-ml_cache 2> /dev/null
 
 #docker network create public_net 2> /dev/null
 
@@ -44,4 +46,7 @@ docker cp $appdir/worker/brancfg $cntName:/root/.brancfg
 docker restart $cntName
 docker exec $cntName service cron start
 docker exec $cntName /bin/bash -c "cat /etc/cron.d/cleanup-task | crontab -"
+
+#Worker-ml
+cp -r $appdir/worker-ml/files/* /var/lib/docker/volumes/flo_worker-ml/_data/
 

@@ -80,6 +80,8 @@ API_URL=http://backend
 ```
 Nel caso del backend possono essere indicati più token, separati da virgola. Ciascun token dovrebbe essere assegnato a uno specifico worker (se ce n'è più di uno). Nel caso del worker, il token deve essere solo il suo. Da notare che l'URL non deve terminare con "/", e che non deve subire redirect (es: da http a https), altrimenti le richieste POST non passano.
 
+Attualmente, il container ***worker*** e ***worker-ml*** devono essere sulla stessa macchina, perché worker fa delle rihùchieste a worker-ml.
+
 Il file .env.deploy ha un contenuto di questo tipo:
 ```
 GITHUB_SECRET="myWebHook_Secret"

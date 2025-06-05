@@ -1,0 +1,11 @@
+numpy
+flask
+requests
+langchain
+langchainhub
+langchain-community
+langchain-huggingface
+replicate
+huggingface-hub
+faiss-cpu
+sentence-transformers

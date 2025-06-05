@@ -258,7 +258,34 @@ def correct(token,request):
                 synonims = []
             mycorr["recommendedText"] = "Prova a utilizzare "
             mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
+            vdbsynonims = []
+            for mysyn in synonims:
+                if mysyn in vdb2016 or mysyn in vdbAdd:
+                    vdbsynonims.append(mysyn)
             mycorr["synonims"] = synonims
+            synOptions = {}
+            context = ""
+            for c in range(-2,3):
+                try:
+                    context += corpustsv[i+c][1]+ " "
+                except:
+                    pass
+            S = requests.Session()
+            URL = "http://worker-ml/vdb/embed"
+            PARAMS = {
+                "word": corpustsv[i][1],
+                "context": context,
+                "synonyms": json.dumps(vdbsynonims),
+                "max_res":5
+            }
+            try:
+                R = S.post(url=URL, data=PARAMS)
+                DATA = R.json()
+                synOptions = DATA["close_words"]
+                mycorr["synonimsOptions"] = synOptions
+                #print(mycorr["synonimsOptions"])
+            except Exception as e:
+                print(e)
             mycorr["category"] = "synonims"
             allcorrs.append(mycorr)
 
@@ -466,10 +493,10 @@ if __name__ == '__main__':
         if ready_to_work:
             #print("check for new tasks")
             headers = {"Authorization": "Bearer " + auth}
-            x = requests.get(apiurl+"/todo", headers=headers)
-            #print(x.text)
-            myobj = json.loads(x.text)
             try:
+                x = requests.get(apiurl+"/todo", headers=headers)
+                #print(x.text)
+                myobj = json.loads(x.text)
                 token = myobj["token"]
                 request = myobj["request"]
             except:
@@ -477,8 +504,9 @@ if __name__ == '__main__':
                 time.sleep(1)
                 continue
             try:
-                t = threading.Thread(target=correct, args=(token,request))
-                t.start()
+                if token != '':
+                    t = threading.Thread(target=correct, args=(token,request))
+                    t.start()
             except:
                 # TODO: mark this token as failed on api db
                 pass
