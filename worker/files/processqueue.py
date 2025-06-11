@@ -191,6 +191,7 @@ def correct(token,request):
     
     allcorrs = []
 
+    print("Looking for Bran filters")
     #myobj["correctionsFilter"] = []
     for myfilter in allfilters:
         mycorrections = findBranFilter(sessionfile, rebuiltText, myfilter[0], myfilter[1], myfilter[2])
@@ -198,8 +199,11 @@ def correct(token,request):
             #myobj["correctionsFilter"].append(mycorr)
             if "aux:pass" in myfilter[0] or "expl:impers" in myfilter[0]:
                 mycorr["end"] = mycorr["end"]+1
-            mycorr["start"] = tokenList[mycorr["start"]][0]
-            mycorr["end"] = tokenList[mycorr["end"]][1]
+            try:
+                mycorr["start"] = tokenList[mycorr["start"]][0]
+                mycorr["end"] = tokenList[mycorr["end"]][1]
+            except Exception as e:
+                print("Error with filter ", myfilter, ":", e)
             try:
                 mycorr["category"] = myfilter[3]
                 if myfilter[3] == "":
@@ -208,7 +212,9 @@ def correct(token,request):
                 mycorr["category"] = "generic"
             allcorrs.append(mycorr)
 
+
     Corpus.chiudiProgetto()
+    print("Closed Bran project file")
 
     #myobj["correctionsRe"] = []
     for myregex in allregex:
@@ -222,42 +228,54 @@ def correct(token,request):
             except:
                 mycorr["category"] = "generic"
             allcorrs.append(mycorr)
+    print("Found all requested regexes")
     
-    myobj["files"]["sinonimi"] = {}
+    myobj["files"]["sinonimi"] = ""
     corpustsv = loadFromTSV(sessionfile)
+    print("Loaded corpus TSV")
     for i in range(len(corpustsv)):
         lemma =corpustsv[i][2]
         #fix udpipe errors
         lemma = re.sub("iscere$","ire", lemma)
         if lemma not in vdb2016 and lemma not in vdbAdd and bool(re.match('.*[^a-z].*', lemma))==False and len(lemma)>3:
             mycorr = {}
-            mycorr["start"] = tokenList[i][0]
-            mycorr["end"] = tokenList[i][1]
+            try:
+                mycorr["start"] = tokenList[i][0]
+                mycorr["end"] = tokenList[i][1]
+            except Exception as e:
+                print("Error getting correction start and end",e)
             #https://it.wiktionary.org/w/api.php?action=parse&page=retribuzione&format=json&prop=wikitext&formatversion=2
             synonims = []
-            S = requests.Session()
-            URL = "https://it.wiktionary.org/w/api.php"
-            PARAMS = {
-                "action": "parse",
-                "page": str(lemma),
-                "format": "json",
-                "prop":"wikitext",
-                "formatversion":"2"
-            }
-            R = S.get(url=URL, params=PARAMS)
-            DATA = R.json()
+            try:
+                S = requests.Session()
+                URL = "https://it.wiktionary.org/w/api.php"
+                PARAMS = {
+                    "action": "parse",
+                    "page": str(lemma),
+                    "format": "json",
+                    "prop":"wikitext",
+                    "formatversion":"2"
+                }
+                R = S.get(url=URL, params=PARAMS)
+                DATA = R.json()
+            except Exception as e:
+                print("Error lokking up on wikizionario", e)
             try:
                 wikitxt = DATA["parse"]["wikitext"].replace("\n","")
-                myobj["files"]["sinonimi"][str(lemma)] = wikitxt
                 synStart = wikitxt.index("{{-sin-}}")
                 synEnd = wikitxt.index("{{-", synStart+8)
                 synstr = wikitxt[synStart:synEnd]
                 synstrclean = re.sub(re.escape("{")+".*?"+re.escape("}"),"",synstr.lower())
                 synonims = re.split("]+",re.sub("[^a-z\]]","",synstrclean).replace(" ", ""))
-            except:
+            except Exception as e:
+                print(e)
                 synonims = []
             mycorr["recommendedText"] = "Prova a utilizzare "
-            mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
+            try:
+                mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
+            except Exception as e:
+                print("Error retieving word from corpustsv", e)
+                continue
             vdbsynonims = []
             for mysyn in synonims:
                 if mysyn in vdb2016 or mysyn in vdbAdd:
@@ -270,24 +288,67 @@ def correct(token,request):
                     context += corpustsv[i+c][1]+ " "
                 except:
                     pass
+            print("Got response from wikizionario")
             S = requests.Session()
             URL = "http://worker-ml/vdb/embed"
+            embed_max_res = 5
             PARAMS = {
                 "word": corpustsv[i][1],
                 "context": context,
                 "synonyms": json.dumps(vdbsynonims),
-                "max_res":5
+                "max_res": embed_max_res
             }
+            synOptions = {}
             try:
                 R = S.post(url=URL, data=PARAMS)
                 DATA = R.json()
-                synOptions = DATA["close_words"]
+                #synOptions = DATA["close_words"]
+                for synkey in DATA["close_words"]:
+                    synOptions[synkey] = dict(sorted(DATA["close_words"][synkey].items(), key=lambda item: item[1], reverse=True)) #Sort by bigger similarity
+                synOptions = dict(sorted(synOptions.items(), key=lambda item: item[0], reverse=True)) #Sort by model name desc
                 mycorr["synonimsOptions"] = synOptions
-                #print(mycorr["synonimsOptions"])
+                print(mycorr["synonimsOptions"])
             except Exception as e:
                 print(e)
             mycorr["category"] = "synonims"
+            synFile = []
+            synFile.append(["lemma:", str(lemma)])
+            synFile.append(["contesto:", context])
+            synFile.append([])
+            synFile.append(["wikizionario"])
+            synHeader = 3
+            for sfi in range(len(vdbsynonims)):
+                synFile.append([vdbsynonims[sfi]])
+            while len(synFile) < synHeader +1 + embed_max_res:
+                synFile.append([])
+            for sfi in range(embed_max_res):
+                if len(synFile[sfi+1+synHeader]) < 1:
+                    synFile[sfi+1+synHeader].append("")
+                for mdl in synOptions:
+                    synFile[sfi+1+synHeader].append("")
+                    synFile[sfi+1+synHeader].append("")
+            sfc = 1    
+            for mdl in synOptions:
+                synFile[synHeader].append(mdl)
+                synFile[synHeader].append(mdl+" similarity")
+                sfi = 0
+                for synkey in synOptions[mdl]:
+                    synFile[sfi+1+synHeader][sfc] = synkey
+                    synFile[sfi+1+synHeader][sfc+1] = synOptions[mdl][synkey]
+                    sfi += 1
+                sfc += 2
+            #myobj["files"]["sinonimi"][context] = synFile
+            for r in range(len(synFile)):
+                for c in range(len(synFile[r])):
+                    myobj["files"]["sinonimi"] += str(synFile[r][c]) + "\t"
+                myobj["files"]["sinonimi"] += "\n"
             allcorrs.append(mycorr)
+
+    #cleanup empty corrections
+    for i in range(len(allcorrs)-1,-1,-1):
+        if "start" not in allcorrs[i]:
+            print("Empty correction", allcorrs[i])
+            allcorrs.pop(i)
 
     #sort corrections (avoid nested corrections)
     tmpcorrs = []
@@ -298,6 +359,7 @@ def correct(token,request):
                 smaller[0] = i
                 smaller[1] = allcorrs[i]["start"]
         tmpcorrs.append(allcorrs.pop(smaller[0]))
+    print("Sorted corrections")
 
     #merge close corrections
     for i in range(len(tmpcorrs)-1, 0, -1):
@@ -329,18 +391,24 @@ def correct(token,request):
 
     myobj["corrections"] = tmpcorrs
     
+    print("Cleaned up corrections list")
     #print(myobj)
+    
+    try:
+        myjson = json.dumps(myobj)
+        fileout = '/tmp/Bran/' + token + '/result.json'
+        file = open(fileout,"w", encoding='utf-8')
+        file.write(myjson)
+        file.close()
+    except Exception as e:
+        print("Error writing results in temporary file", e)
 
-    myjson = json.dumps(myobj)
-    fileout = '/tmp/Bran/' + token + '/result.json'
-    file = open(fileout,"w", encoding='utf-8')
-    file.write(myjson)
-    file.close()
-
-    x = requests.post(apiurl+"/done",
-                      data={"token": token, "results": myjson}, headers=headers)
-    print(x.text)
-    print("DONE processing "+token)
+    try:
+        x = requests.post(apiurl+"/done", data={"token": token, "results": myjson}, headers=headers)
+        print(x.text)
+        print("DONE processing "+token)
+    except Exception as e:
+        print("Error uploading results", e)
 
     return
     

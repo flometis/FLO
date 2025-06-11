@@ -358,14 +358,7 @@ function fillCorrectionsList() {
     tmpcorrlist += "<p>";
     for (const [key, value] of Object.entries(lastCorrect["files"])) {
       var ext = ".tsv";
-      if (key == "sinonimi") {
-        ext = ".txt";
-        for (const [keyS, valueS] of Object.entries(lastCorrect["files"]["sinonimi"])) {
-          tmpcorrlist += "<a href=\"data:text/plain;charset=utf-8," + encodeURIComponent(valueS) +"\" download=\""+key+"_"+keyS+ext+"\">"+key+" "+keyS+"</a>"+"</br>";
-        } 
-      } else {
-        tmpcorrlist += "<a href=\"data:text/plain;charset=utf-8," + encodeURIComponent(value) +"\" download=\""+key+ext+"\">"+key+"</a>"+"</br>";
-      }
+      tmpcorrlist += "<a href=\"data:text/plain;charset=utf-8," + encodeURIComponent(value) +"\" download=\""+key+ext+"\">"+key+"</a>"+"</br>";
     }
     tmpcorrlist += "</p>";
     tmpcorrlist += "</details>";
