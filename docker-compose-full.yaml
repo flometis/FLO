@@ -82,6 +82,8 @@ services:
       - .env.api
     environment:
       - EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2,sentence-transformers/distiluse-base-multilingual-cased-v2,ArchitRastogi/bert-base-italian-embeddings,nickprock/sentence-bert-base-italian-uncased,GroNLP/gpt2-medium-italian-embeddings,dbmdz/bert-base-italian-xxl-uncased
+      - OLLAMA_URL=http://ollama:11434
+      - LLM_MODEL=mixtral
     logging:
       driver: "json-file"
       options:

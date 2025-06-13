@@ -231,6 +231,7 @@ def correct(token,request):
     print("Found all requested regexes")
     
     myobj["files"]["sinonimi"] = ""
+    myobj["files"]["spiegazioni_llm"] = "model\tword\tcontext\tpos\texplaination\n"
     corpustsv = loadFromTSV(sessionfile)
     print("Loaded corpus TSV")
     for i in range(len(corpustsv)):
@@ -342,6 +343,22 @@ def correct(token,request):
                 for c in range(len(synFile[r])):
                     myobj["files"]["sinonimi"] += str(synFile[r][c]) + "\t"
                 myobj["files"]["sinonimi"] += "\n"
+            mypos = corpustsv[i][3]
+            if mypos == 'NOUN' or mypos == 'VERB' or mypos == 'ADJ':
+                S = requests.Session()
+                URL = "http://worker-ml/llm/explain"
+                PARAMS = {
+                    "word": corpustsv[i][1].replace('"',''),
+                    "context": context.replace('"','')
+                }
+                try:
+                    R = S.post(url=URL, data=PARAMS)
+                    DATA = R.json()
+                    print(DATA)
+                    mycorr["llm_explaination"] = DATA
+                    myobj["files"]["spiegazioni_llm"] += DATA["model"] +"\t" + DATA["word"] +"\t" + context +"\t" + mypos + "\t" + DATA["explaination"] + "\n"
+                except Exception as e:
+                    print(e)
             allcorrs.append(mycorr)
 
     #cleanup empty corrections

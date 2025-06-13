@@ -282,6 +282,11 @@ function fillCorrectionsList() {
           }
           tmpcorrlist += "</p>";
       }
+      if ("llm_explaination" in lastCorrect["corrections"][i]) {
+          tmpcorrlist += "<p>";
+          tmpcorrlist += "Il modello (LLM) <b>"+lastCorrect["corrections"][i]["llm_explaination"]["model"] +"</b> propone questa spiegazione:</br>"+lastCorrect["corrections"][i]["llm_explaination"]["explaination"];
+          tmpcorrlist += "</p>";
+      }
       tmpcorrlist += "</span>";
       tmpthiscorr += lastCorrect["corrections"][i]["explanation"];
       for (var n = 0; n < lastCorrect["correctionsNested"].length; n++) {

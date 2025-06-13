@@ -5,6 +5,8 @@ langchain
 langchainhub
 langchain-community
 langchain-huggingface
+langchain-ollama
+langchain-core
 replicate
 huggingface-hub
 faiss-cpu

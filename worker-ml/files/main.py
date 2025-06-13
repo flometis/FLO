@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
 #https://python.langchain.com/docs/concepts/embedding_models/
+#https://ollama.com/blog/structured-outputs
+
+
 import os
 import sys
 import json
@@ -14,6 +17,9 @@ import numpy as np
 
 from langchain_huggingface import HuggingFaceEmbeddings
 
+from langchain_ollama import ChatOllama
+from langchain_core.prompts import ChatPromptTemplate
+
 
 
 EMBEDDING_MODEL_NAMES = os.environ.get('EMBEDDING_MODEL_NAME', "all-MiniLM-L6-v2,ArchitRastogi/bert-base-italian-embeddings,sentence-transformers/distiluse-base-multilingual-cased-v2,dbmdz/bert-base-italian-xxl-uncased,nickprock/sentence-bert-base-italian-uncased,GroNLP/gpt2-medium-italian-embeddings")
@@ -26,6 +32,29 @@ app = Flask(__name__)
 
 embeddings_models = {}
 vocabularies = {}
+
+LLM_MODEL = os.environ.get('LLM_MODEL',"mixtral")
+OLLAMA_URL = os.environ.get('LLM_MODEL',"http://ollama:11434")
+
+llm = ChatOllama(
+    model=LLM_MODEL,
+    base_url=OLLAMA_URL,
+    #temperature=0,
+    # other params...
+)
+
+promptEtR = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Spiega il signficato della parola nella frase usando parole da scuola elementare. La risposta deve essere una sola frase lunga al massimo 15 parole e deve essere in lingua italiana.",
+        ),
+        ("human", "Parola: {word} Frase: {sentence}"),
+    ]
+)
+
+chainEtR = promptEtR | llm
+
 
 def loadModels():
     embeddings_models = {}
@@ -122,7 +151,7 @@ def index():
     return myjson
 
 @app.route('/vdb/embed', methods=['POST'])
-def done():
+def vdb_embed():
     try:
         word = request.values['word']
         context = request.values['context']
@@ -138,6 +167,25 @@ def done():
         resp = make_response({})
     return resp
 
+@app.route('/llm/explain', methods=['POST'])
+def llm_explain():
+    try:
+         word = request.values['word']
+         context = request.values['context']
+         res = chainEtR.invoke(
+         {
+            "word": word,
+            "sentence": context,
+         }
+         )
+         cleaned = res.content.split(".")[0]
+         print(cleaned)
+         resp = make_response({"model": LLM_MODEL, "word": word, "explaination": cleaned})
+    except:
+        resp = make_response({})
+    return resp
+
+
 ## Main
 
 embeddings_models = loadModels()
@@ -146,6 +194,4 @@ vocabularies = loadVocabularies()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=int("80"), threaded=True)
-
-
 
