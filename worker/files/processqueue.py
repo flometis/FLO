@@ -105,6 +105,13 @@ def correct(token,request):
     except:
         pass
 
+    try:
+        use_ml = False
+        if request['machinelearning'] == "true":
+            use_ml = True
+    except:
+        use_ml = False
+
     myRS = request['ruleset']
 
     if myRS == "etr":
@@ -229,6 +236,38 @@ def correct(token,request):
                 mycorr["category"] = "generic"
             allcorrs.append(mycorr)
     print("Found all requested regexes")
+
+    if use_ml:
+        for mycorr in allcorrs:
+            if mycorr["category"] == "virgole":
+                context = ""
+                sentence = ""
+                for c in range(len(rebuiltText)):
+                    if c > mycorr["end"]:
+                        break
+                    if c >= mycorr["start"]:
+                        sentence += rebuiltText[c]
+                r = 0
+                for regexres in re.findall('([^\.:;\!\?\n]*?,)', sentence):
+                    r += 1
+                    if r == 1:
+                        continue
+                    #if context == "":
+                    #    context += regexres.split(" ")[-1]
+                    context += regexres
+                #print("context", context)
+                S = requests.Session()
+                URL = "http://worker-ml/llm/list"
+                PARAMS = {
+                    "context": context.replace('"','')
+                }
+                try:
+                    R = S.post(url=URL, data=PARAMS)
+                    DATA = R.json()
+                    print(DATA)
+                    mycorr["llm_suggestion"] = DATA
+                except Exception as e:
+                    print(e)
     
     myobj["files"]["sinonimi"] = ""
     myobj["files"]["spiegazioni_llm"] = "model\tword\tcontext\tpos\texplaination\n"
@@ -260,7 +299,7 @@ def correct(token,request):
                 R = S.get(url=URL, params=PARAMS)
                 DATA = R.json()
             except Exception as e:
-                print("Error lokking up on wikizionario", e)
+                print("Error looking up on wikizionario", e)
             try:
                 wikitxt = DATA["parse"]["wikitext"].replace("\n","")
                 synStart = wikitxt.index("{{-sin-}}")
@@ -282,6 +321,7 @@ def correct(token,request):
                 if mysyn in vdb2016 or mysyn in vdbAdd:
                     vdbsynonims.append(mysyn)
             mycorr["synonims"] = synonims
+            mycorr["category"] = "synonims"
             synOptions = {}
             context = ""
             for c in range(-2,3):
@@ -290,75 +330,75 @@ def correct(token,request):
                 except:
                     pass
             print("Got response from wikizionario")
-            S = requests.Session()
-            URL = "http://worker-ml/vdb/embed"
-            embed_max_res = 5
-            PARAMS = {
-                "word": corpustsv[i][1],
-                "context": context,
-                "synonyms": json.dumps(vdbsynonims),
-                "max_res": embed_max_res
-            }
-            synOptions = {}
-            try:
-                R = S.post(url=URL, data=PARAMS)
-                DATA = R.json()
-                #synOptions = DATA["close_words"]
-                for synkey in DATA["close_words"]:
-                    synOptions[synkey] = dict(sorted(DATA["close_words"][synkey].items(), key=lambda item: item[1], reverse=True)) #Sort by bigger similarity
-                synOptions = dict(sorted(synOptions.items(), key=lambda item: item[0], reverse=True)) #Sort by model name desc
-                mycorr["synonimsOptions"] = synOptions
-                print(mycorr["synonimsOptions"])
-            except Exception as e:
-                print(e)
-            mycorr["category"] = "synonims"
-            synFile = []
-            synFile.append(["lemma:", str(lemma)])
-            synFile.append(["contesto:", context])
-            synFile.append([])
-            synFile.append(["wikizionario"])
-            synHeader = 3
-            for sfi in range(len(vdbsynonims)):
-                synFile.append([vdbsynonims[sfi]])
-            while len(synFile) < synHeader +1 + embed_max_res:
-                synFile.append([])
-            for sfi in range(embed_max_res):
-                if len(synFile[sfi+1+synHeader]) < 1:
-                    synFile[sfi+1+synHeader].append("")
-                for mdl in synOptions:
-                    synFile[sfi+1+synHeader].append("")
-                    synFile[sfi+1+synHeader].append("")
-            sfc = 1    
-            for mdl in synOptions:
-                synFile[synHeader].append(mdl)
-                synFile[synHeader].append(mdl+" similarity")
-                sfi = 0
-                for synkey in synOptions[mdl]:
-                    synFile[sfi+1+synHeader][sfc] = synkey
-                    synFile[sfi+1+synHeader][sfc+1] = synOptions[mdl][synkey]
-                    sfi += 1
-                sfc += 2
-            #myobj["files"]["sinonimi"][context] = synFile
-            for r in range(len(synFile)):
-                for c in range(len(synFile[r])):
-                    myobj["files"]["sinonimi"] += str(synFile[r][c]) + "\t"
-                myobj["files"]["sinonimi"] += "\n"
-            mypos = corpustsv[i][3]
-            if mypos == 'NOUN' or mypos == 'VERB' or mypos == 'ADJ':
+            if use_ml:
                 S = requests.Session()
-                URL = "http://worker-ml/llm/explain"
+                URL = "http://worker-ml/vdb/embed"
+                embed_max_res = 5
                 PARAMS = {
-                    "word": corpustsv[i][1].replace('"',''),
-                    "context": context.replace('"','')
+                    "word": corpustsv[i][1],
+                    "context": context,
+                    "synonyms": json.dumps(vdbsynonims),
+                    "max_res": embed_max_res
                 }
+                synOptions = {}
                 try:
                     R = S.post(url=URL, data=PARAMS)
                     DATA = R.json()
-                    print(DATA)
-                    mycorr["llm_explaination"] = DATA
-                    myobj["files"]["spiegazioni_llm"] += DATA["model"] +"\t" + DATA["word"] +"\t" + context +"\t" + mypos + "\t" + DATA["explaination"] + "\n"
+                    #synOptions = DATA["close_words"]
+                    for synkey in DATA["close_words"]:
+                        synOptions[synkey] = dict(sorted(DATA["close_words"][synkey].items(), key=lambda item: item[1], reverse=True)) #Sort by bigger similarity
+                    synOptions = dict(sorted(synOptions.items(), key=lambda item: item[0], reverse=True)) #Sort by model name desc
+                    mycorr["synonimsOptions"] = synOptions
+                    print(mycorr["synonimsOptions"])
                 except Exception as e:
                     print(e)
+                synFile = []
+                synFile.append(["lemma:", str(lemma)])
+                synFile.append(["contesto:", context])
+                synFile.append([])
+                synFile.append(["wikizionario"])
+                synHeader = 3
+                for sfi in range(len(vdbsynonims)):
+                    synFile.append([vdbsynonims[sfi]])
+                while len(synFile) < synHeader +1 + embed_max_res:
+                    synFile.append([])
+                for sfi in range(embed_max_res):
+                    if len(synFile[sfi+1+synHeader]) < 1:
+                        synFile[sfi+1+synHeader].append("")
+                    for mdl in synOptions:
+                        synFile[sfi+1+synHeader].append("")
+                        synFile[sfi+1+synHeader].append("")
+                sfc = 1    
+                for mdl in synOptions:
+                    synFile[synHeader].append(mdl)
+                    synFile[synHeader].append(mdl+" similarity")
+                    sfi = 0
+                    for synkey in synOptions[mdl]:
+                        synFile[sfi+1+synHeader][sfc] = synkey
+                        synFile[sfi+1+synHeader][sfc+1] = synOptions[mdl][synkey]
+                        sfi += 1
+                    sfc += 2
+                #myobj["files"]["sinonimi"][context] = synFile
+                for r in range(len(synFile)):
+                    for c in range(len(synFile[r])):
+                        myobj["files"]["sinonimi"] += str(synFile[r][c]) + "\t"
+                    myobj["files"]["sinonimi"] += "\n"
+                mypos = corpustsv[i][3]
+                if mypos == 'NOUN' or mypos == 'VERB' or mypos == 'ADJ':
+                    S = requests.Session()
+                    URL = "http://worker-ml/llm/explain"
+                    PARAMS = {
+                        "word": corpustsv[i][1].replace('"',''),
+                        "context": context.replace('"','')
+                    }
+                    try:
+                        R = S.post(url=URL, data=PARAMS)
+                        DATA = R.json()
+                        print(DATA)
+                        mycorr["llm_explaination"] = DATA
+                        myobj["files"]["spiegazioni_llm"] += DATA["model"] +"\t" + DATA["word"] +"\t" + context +"\t" + mypos + "\t" + DATA["explaination"] + "\n"
+                    except Exception as e:
+                        print(e)
             allcorrs.append(mycorr)
 
     #cleanup empty corrections

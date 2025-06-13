@@ -199,7 +199,7 @@ function controlloTesto(mytextarea, apipage) {
       alert('Cannot create an XMLHTTP instance');
   }
 
-  var mytext = document.getElementById(mytextarea).innerHTML; //.innerText.replace(/<[^>]+>/g, '');
+  var mytext = document.getElementById(mytextarea).innerText; //.innerText.replace(/<[^>]+>/g, '');
   mytext = mytext.replace(/\r\n|\r|\n/g, '<br>');
   //console.log(mytext);
   //if (apipage == "") apipage = window.location.origin +"/floapi";
@@ -210,8 +210,11 @@ function controlloTesto(mytextarea, apipage) {
   if ( tmpRS == "etr") myRS = "etr";
   var myOptin = "false";
   if (document.getElementById("optin").checked) myOptin = "true";
+  var myML = "false";
+  if (document.getElementById("machinelearning").checked) myML = "true";
   data.append('ruleset', myRS);
   data.append('optin', myOptin);
+  data.append('machinelearning', myML);
   xmlhttp.open("POST", apipage+"/correct", true);
   xmlhttp.send(data);
   xmlhttp.onreadystatechange = function() {
@@ -259,6 +262,11 @@ function fillCorrectionsList() {
       tmpcorrlist += "<summary id=\"summary_"+i.toString()+"\"><p>Correzione "+(i+1).toString()+"</p></summary>";
       var tmpthiscorr = "";
       tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p>";
+      if ("llm_suggestion" in lastCorrect["corrections"][i]) {
+          tmpcorrlist += "<p>";
+          tmpcorrlist += "Il modello (LLM) <b>"+lastCorrect["corrections"][i]["llm_suggestion"]["model"] +"</b> suggerisce:</br>"+lastCorrect["corrections"][i]["llm_suggestion"]["suggestion"].replace(/\n/g,'</br>');;
+          tmpcorrlist += "</p>";
+      }
       if ("synonims" in lastCorrect["corrections"][i]) {
           var recSynWiki = recommendSynonims(lastCorrect["corrections"][i]["synonims"]);
           if (recSynWiki != "") {
@@ -595,6 +603,10 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
     <div class="form-check">
     <input id="optin" value="true" type="checkbox">
     <label for="optin">Voglio che il mio testo venga conservato <a href="privacy.html" target="_blank">anonimamente</a> per analisi statistiche</label>
+    </div>
+    <div class="form-check">
+    <input id="machinelearning" value="true" type="checkbox" checked>
+    <label for="machinelearning">Utilizza anche embeddings e LLM</label>
     </div>
     </div>
     </div>

@@ -34,7 +34,9 @@ embeddings_models = {}
 vocabularies = {}
 
 LLM_MODEL = os.environ.get('LLM_MODEL',"mixtral")
-OLLAMA_URL = os.environ.get('LLM_MODEL',"http://ollama:11434")
+OLLAMA_URL = os.environ.get('OLLAMA_URL',"http://ollama:11434")
+
+
 
 llm = ChatOllama(
     model=LLM_MODEL,
@@ -43,7 +45,7 @@ llm = ChatOllama(
     # other params...
 )
 
-promptEtR = ChatPromptTemplate.from_messages(
+promptExplain = ChatPromptTemplate.from_messages(
     [
         (
             "system",
@@ -53,7 +55,19 @@ promptEtR = ChatPromptTemplate.from_messages(
     ]
 )
 
-chainEtR = promptEtR | llm
+chainExplain = promptExplain | llm
+
+promptList = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Trasforma la lista in un elenco puntato. La risposta deve essere in lingua italiana.",
+        ),
+        ("human", "Lista: {sentence}"),
+    ]
+)
+
+chainList = promptList | llm
 
 
 def loadModels():
@@ -172,7 +186,7 @@ def llm_explain():
     try:
          word = request.values['word']
          context = request.values['context']
-         res = chainEtR.invoke(
+         res = chainExplain.invoke(
          {
             "word": word,
             "sentence": context,
@@ -185,6 +199,21 @@ def llm_explain():
         resp = make_response({})
     return resp
 
+@app.route('/llm/list', methods=['POST'])
+def llm_list():
+    try:
+         context = request.values['context']
+         res = chainList.invoke(
+         {
+            "sentence": context,
+         }
+         )
+         cleaned = res.content
+         print(cleaned)
+         resp = make_response({"model": LLM_MODEL, "suggestion": cleaned})
+    except:
+        resp = make_response({})
+    return resp
 
 ## Main
 

@@ -55,6 +55,10 @@ p {
   text-decoration: underline double red;
 }
 
+.correctionSpan_virgole {
+  text-decoration: underline double orange;
+}
+
 .correctionSpan_lunghezza {
   background-color: lightcoral;
  }
