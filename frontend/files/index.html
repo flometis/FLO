@@ -63,16 +63,20 @@ function getSelectorStyle(selector) {
 
 function unhighlight(x, i) {
   x.style.cssText = getSelectorStyle("."+x.className).cssText;
-  var summary = document.getElementById('details_'+i.toString());
-  summary.style.cssText = getSelectorStyle(".detail_default").cssText;
-  summary.open = false;
+  //var summary = document.getElementById('details_'+i.toString());
+  //summary.className = "detail_default";
+  //summary.open = false;
 }
 
 function highlight(x, i) {
   x.style.cssText = getSelectorStyle(".correction_highlighted").cssText;
   if (x.style.cssText=="") x.style.backgroundColor="red";
+  var alreadyselected = document.getElementsByClassName("detail_selected");
+  for (let i = 0; i < alreadyselected.length; i++) {
+    alreadyselected.item(i).className = "detail_default";
+  }
   var summary = document.getElementById('details_'+i.toString());
-  summary.style.cssText = getSelectorStyle(".detail_selected").cssText;
+  summary.className = "detail_selected";
   summary.open = true;
 }
 
@@ -264,7 +268,7 @@ function fillCorrectionsList() {
       tmpcorrlist += "<span id=\"explaination_"+i.toString()+"\" class=\"explainations\" onclick=\"highlight(correction_"+i.toString()+", "+i.toString()+")\"><p>"+lastCorrect["corrections"][i]["explanation"]+"</p>";
       if ("llm_suggestion" in lastCorrect["corrections"][i]) {
           tmpcorrlist += "<p>";
-          tmpcorrlist += "Il modello (LLM) <b>"+lastCorrect["corrections"][i]["llm_suggestion"]["model"] +"</b> suggerisce:</br>"+lastCorrect["corrections"][i]["llm_suggestion"]["suggestion"].replace(/\n/g,'</br>');;
+          tmpcorrlist += "Ecco la proposta di riscrittura dell’intelligenza artificiale <b>"+lastCorrect["corrections"][i]["llm_suggestion"]["model"] +"</b>:</br>"+lastCorrect["corrections"][i]["llm_suggestion"]["suggestion"].replace(/\n/g,'</br>');
           tmpcorrlist += "</p>";
       }
       if ("synonims" in lastCorrect["corrections"][i]) {
@@ -277,8 +281,9 @@ function fillCorrectionsList() {
       }
       if ("synonimsOptions" in lastCorrect["corrections"][i]) {
           tmpcorrlist += "<p>";
+          tmpcorrlist += "Ecco quali sinonimi potrebbero <span data-tooltip='Gli embeddings rappresentano le parole come numeri, in modo che il computer possa capire il loro significato e trovare quelle con senso simile' data-tooltip-position='top'>essere migliori per il nostro sistema</span> "; 
 	  for (const [Synkey, Synvalue] of Object.entries(lastCorrect["corrections"][i]["synonimsOptions"])) {
-              tmpcorrlist += "<b>"+Synkey+"</b> propone:</br>";
+              tmpcorrlist += "Modello <a href='https://huggingface.co/"+Synkey+"'>"+Synkey+"</a>:</br>";
               let sortedSyn = Object.fromEntries(
                   Object.entries(Synvalue).sort(([, a], [, b]) => b - a)
               );
@@ -292,7 +297,7 @@ function fillCorrectionsList() {
       }
       if ("llm_explaination" in lastCorrect["corrections"][i]) {
           tmpcorrlist += "<p>";
-          tmpcorrlist += "Il modello (LLM) <b>"+lastCorrect["corrections"][i]["llm_explaination"]["model"] +"</b> propone questa spiegazione:</br>"+lastCorrect["corrections"][i]["llm_explaination"]["explaination"];
+          tmpcorrlist += "Preferisci una spiegazione? Ecco la proposta dell’intelligenza artificiale  <a href='https://huggingface.co/docs/transformers/en/model_doc/"+lastCorrect["corrections"][i]["llm_explaination"]["model"] +"'>"+lastCorrect["corrections"][i]["llm_explaination"]["model"] +"</a>:</br>"+lastCorrect["corrections"][i]["llm_explaination"]["explaination"];
           tmpcorrlist += "</p>";
       }
       tmpcorrlist += "</span>";
@@ -604,7 +609,7 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
     <input id="optin" value="true" type="checkbox">
     <label for="optin">Voglio che il mio testo venga conservato <a href="privacy.html" target="_blank">anonimamente</a> per analisi statistiche</label>
     </div>
-    <div class="form-check">
+    <div class="form-check" data-tooltip="L'uso di LLM può richiedere molto tempo" data-tooltip-position="bottom">
     <input id="machinelearning" value="true" type="checkbox" checked>
     <label for="machinelearning">Utilizza anche embeddings e LLM</label>
     </div>
@@ -631,7 +636,7 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
 
 <script>
   $(document).ready(function() {
-    notificationShow('notification-esempi')
+    //notificationShow('notification-esempi')
   })
 </script>
 </td>
@@ -639,12 +644,14 @@ Il Rem non e' compatibile con la presenza nel nucleo familiare di componenti che
     <div id="correctionsList" class="container">
     <h3>Che cos'è FLO?</h3>
     <p>È un assistente automatico alla scrittura, che aiuta a ottenere testi in plain language e in linguaggio facile in italiano. Analizza  automaticamente i testi, ne individua i difetti e dà suggerimenti e spiegazioni per migliorarli. Con FLO possiamo:</p><ul style="color:#005c5a;">
-<li>individuare le frasi eccessivamente lunghe;</li>
-<li>riconoscere le strutture sintattiche complesse;</li>
-<li>distinguere le parole difficili e poco comuni e sostituirle con sinonimi più semplici;</li>
-<li>ottenere statistiche statistiche interessanti sul nostro testo.</li>
+<li>individuare le <b>frasi eccessivamente lunghe</b>;</li>
+<li>riconoscere le <b>strutture sintattiche complesse</b>;</li>
+<li>distinguere le <b>parole difficili</b> e poco comuni e sostituirle con <b>sinonimi</b> o spiegazioni più semplici. FLO usa l’<b>intelligenza artificiale</b> e gli <b>embeddings</b>, che permettono al computer di cogliere il significato delle parole, rappresentandole con numeri che ne riflettono il senso e le somiglianze con altre parole. In questo modo, FLO può confrontare le parole tra loro e scegliere quelle più semplici ma con significato simile;</li>
+<li>ottenere <b>statistiche</b> statistiche interessanti sul nostro testo.</li>
 </ul>
-<p>Lo scopo di FLO è valutare la qualità del testo, ma soprattutto ci insegna a riconoscere e a correggere i difetti più comuni della scrittura e a migliorare l’efficacia comunicativa dei testi.</br></br>
+<p>
+Lo scopo di FLO non è solo valutare la qualità del testo, ma soprattutto aiutare a riconoscere e correggere i difetti più comuni della scrittura, per renderla più chiara ed efficace.
+</br></br>
 Con FLO, il facile da leggere diventa anche più facile da scrivere.</p>
     </div>
     <div id="plotsList" class="container">
