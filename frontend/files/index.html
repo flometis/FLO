@@ -275,7 +275,7 @@ function fillCorrectionsList() {
           var recSynWiki = recommendSynonims(lastCorrect["corrections"][i]["synonims"]);
           if (recSynWiki != "") {
               tmpcorrlist += "<p>";
-              tmpcorrlist += "Il <b>Wikizionario</b> propone: </br>" + recSynWiki;
+              tmpcorrlist += "Il Wikizionario (<a href='https://it.wiktionary.org/wiki/"+lastCorrect["corrections"][i]["lemma"]+"' target='_blank'>vedi definizione</a>) propone: </br>" + recSynWiki;
               tmpcorrlist += "</p>";
           }
       }

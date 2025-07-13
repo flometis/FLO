@@ -311,6 +311,7 @@ def correct(token,request):
                 print(e)
                 synonims = []
             mycorr["recommendedText"] = "Prova a utilizzare "
+            mycorr["lemma"] = str(lemma)
             try:
                 mycorr["explanation"] = "La parola " + corpustsv[i][1] + " non è nel Vocabolario di Base"
             except Exception as e:
@@ -340,6 +341,7 @@ def correct(token,request):
                     "synonyms": json.dumps(vdbsynonims),
                     "max_res": embed_max_res
                 }
+                print(PARAMS)
                 synOptions = {}
                 try:
                     R = S.post(url=URL, data=PARAMS)
